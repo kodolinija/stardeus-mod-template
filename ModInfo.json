@@ -1,0 +1,6 @@
+{
+    "Id" : "template",
+    "Name" : "Stardeus Mod Template",
+    "Description" : "Example Stardeus mod template with VS Code",
+    "Dependencies" : [ "core" ]
+}
