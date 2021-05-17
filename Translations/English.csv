@@ -1,0 +1,6 @@
+Key,Translation,Comment
+objects.devices.modtest,Mod Test,
+objects.devices.modtest.desc,Description about Mod Test device,
+example.translation.key,Example translation key,
+example.key.test1,Test 1,
+item.text,{0} => {1},

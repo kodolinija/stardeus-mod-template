@@ -2,5 +2,7 @@
     "Id" : "template",
     "Name" : "Stardeus Mod Template",
     "Description" : "Example Stardeus mod template with VS Code",
+    "ModVersion" : "1.0.0",
+    "GameVersion" : "0.5.28",
     "Dependencies" : [ "core" ]
 }

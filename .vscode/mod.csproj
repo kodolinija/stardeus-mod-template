@@ -1,5 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
 		<OutputType>Library</OutputType>
 		<TargetFramework>net47</TargetFramework>
         <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
@@ -26,10 +29,5 @@
 	 	<Reference Include="../../../../Managed/*.dll">
 			<Private>False</Private>
 		</Reference>
-
-		<!-- Harmony -->
-		<!-- <Reference Include="../../Harmony/v1.1/Assemblies/0Harmony.dll">
-			<Private>False</Private>
-		</Reference> -->
 	</ItemGroup>
 </Project>

@@ -58,7 +58,7 @@ namespace Game.Components {
                 dataBlock = UDB.Create(this, 
                     UDBT.IText, 
                     IconId.CQuestion,
-                    "some.title".T());
+                    "example.translation.key".T());
             }
             UpdateUIBlock(false);
             return dataBlock;
@@ -78,7 +78,7 @@ namespace Game.Components {
             res.Add(UDB.Create(this, 
                     UDBT.DText,
                     IconId.CMissing,
-                    "item.name".T())
+                    "example.key.test1".T())
                         // In translations item.text = "Foo bar {0} {1}" 
                         // would output "Foo bar 1 2"
                         .WithText("item.text".T(1, 2)));
