@@ -207,7 +207,7 @@ SPRITES = {
 
     # Materials
     "Steel": Sprite("Obj/Materials/Steel", is_rotatable=False),
-    "Brass": Sprite("Obj/Materials/Brass", is_rotatable=False),
+    "CopperPlate": Sprite("Obj/Materials/CopperPlate", is_rotatable=False),
     "Glass": Sprite("Obj/Materials/Glass", is_rotatable=False),
     "Rock": Sprite("Obj/Materials/Rock", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Protein": Sprite("Obj/Materials/Protein", is_rotatable=False),
@@ -226,5 +226,4 @@ SPRITES = {
     "Biowaste": Sprite("Obj/Materials/Biowaste", is_rotatable=False),
     "Water": Sprite("Obj/Materials/Water", is_rotatable=False),
     "Biomass": Sprite("Obj/Materials/Biomass", is_rotatable=False),
-
 }
