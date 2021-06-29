@@ -67,7 +67,7 @@ class StardeusExportSelectedOperator(bpy.types.Operator):
     bl_label = "Export Selected"
     bl_description = "Exports selected object as sprites"
 
-    selection = bpy.props.StringProperty()
+    selection: bpy.props.StringProperty()
 
     def execute(self, context):
         exit_edit_mode()
@@ -81,7 +81,7 @@ class StardeusActivateModelOperator(bpy.types.Operator):
     bl_label = "Activate Model"
     bl_description = "Activates selected object"
 
-    selection = bpy.props.StringProperty()
+    selection: bpy.props.StringProperty()
 
     def execute(self, context):
         col = SPRITES[self.selection]
