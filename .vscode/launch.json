@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build dll",
             "args": [],
-            "program": "../../../../../Stardeus.exe",
+            "program": "../../../../Stardeus.exe",
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "internalConsoleOptions":"neverOpen",

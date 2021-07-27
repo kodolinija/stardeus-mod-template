@@ -23,7 +23,7 @@
 
  	<ItemGroup>
 	 	<!-- Mod -->
-	 	<Compile Include="../Code/**" />
+	 	<Compile Include="../Code/**/*.cs" />
 		
 	 	<!-- Stardeus -->
 	 	<Reference Include="../../../../Managed/*.dll">
