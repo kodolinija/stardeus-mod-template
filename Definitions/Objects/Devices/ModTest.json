@@ -1,7 +1,7 @@
 {
     "ToolPath" : "Devices/Facilities",
     "Layer" : "Objects",
-    "ParentId" : "BaseTile",
+    "ParentId" : "Objects/Devices/BaseDevice",
     "Researchable" : {
         "Prerequisites" : [ 
             "Research/Technology"
