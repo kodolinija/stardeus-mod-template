@@ -43,7 +43,7 @@ namespace Game.Components {
 
         }
 
-        public override void Receive(IComponent sender, string message) {
+        public override void Receive(IComponent sender, int message) {
 
         }
 
