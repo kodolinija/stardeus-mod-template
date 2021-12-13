@@ -1,8 +1,9 @@
 {
     "Id" : "Template",
+    "SteamWorkshop" : true, 
     "Name" : "Stardeus Mod Template",
-    "Description" : "Example Stardeus mod template with VS Code",
+    "Description" : "Example Stardeus mod template with VS Code. Contains official examples of how to mod certain aspects of the game. See more details at the GitHub repo: https://github.com/kodolinija/stardeus-mod-template",
     "ModVersion" : "1.0.0",
-    "GameVersion" : "0.5.28",
+    "GameVersion" : "0.5.182",
     "Dependencies" : [ "core" ]
 }
