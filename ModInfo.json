@@ -1,4 +1,5 @@
 {
+    "Id" : "Template",
     "Name" : "Stardeus Mod Template",
     "Description" : "Example Stardeus mod template with VS Code",
     "ModVersion" : "1.0.0",
