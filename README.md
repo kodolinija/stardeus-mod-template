@@ -7,8 +7,7 @@ extended over time to contain at least one example of any moddable aspect.
 
 See subfolders for more readme files on how to create Artwork, and Definitions.
 
-Copy the Template folder (this folder) in Stardeus_Data\StreamingAssets\Mods\,
-rename it into your mod name, change ModInfo.json, then you're ready to go.
+Best place to ask questions about modding Stardeus is on [Stardeus Discord](https://discord.com/invite/89amEwP), #stardeus-modding channel.
 
 Open this folder with Visual Studio Code, it should automatically find and link
 Stardeus DLL files. Pressing F5 should compile the mod DLL file and run Stardeus.
