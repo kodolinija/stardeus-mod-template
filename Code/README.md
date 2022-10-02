@@ -1,10 +1,10 @@
 # Stardeus Code Modding
 
-Most of Stardeus components are self-registering using Unity's `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.  SubsystemRegistration)]`. This means you won't need hacks like Harmony for things like creating new components, systems, AI actions, etc. There may be some limitations to what can be achieved through code, but you can always visit Stardeus Discord's #stardeus-modding channel and get some help. It is likely that what you need can be exposed easily.
+Most of Stardeus components are self-registering using Unity's `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`. This means you won't need hacks like Harmony for things like creating new components, systems, AI actions, etc. There may be some limitations to what can be achieved through code, but you can always visit Stardeus Discord's #stardeus-modding channel and get some help. It is likely that what you need can be exposed easily.
 
 We are using strings instead of enums in most situations where enum would be a reasonable choice, because strings give more flexibility to create new types of parameters that could be hard to introduce as a new enum value, especially if multiple mods would want to touch the same enum.
 
-Best way to figure how to create the code is to decompile Stardeus DLL files and analyze them. 
+Best way to figure how to create the code is to decompile Stardeus DLL files and analyze them.
 
 Note that everything that uses `RuntimeInitializeOnLoadMethod` will be `sealed` to prevent attempts of extending classes with custom implementations. This is intended, inheritence is bad design in general, composition should be preferred. Also, `RuntimeInitializeOnLoadMethod` will not work with inheritence. Easiest way to modify some component is to create a new component that interacts with existing component. For example, see `Bullet` and `EnergyBullet` - these are separate components and `EnergyBullet` extends the functionality of `Bullet`.
 
@@ -12,7 +12,7 @@ Note that everything that uses `RuntimeInitializeOnLoadMethod` will be `sealed` 
 
 For simple C# mods you can always use `KL.Utils.D.Err("LOG SOMETHING")` to debug your mod with logging statements, but in cases when you need more complex debugging, if you are working on a big mod, etc, here are the steps you can take to use Visual Studio and add breakpoints in your mods, also step through core game code.
 
-1. Acquire development build from spajus. Note: spajus will not give the development build to strangers. There may be a possiblity to do this without the development build, but I couldn't get this to work. [Read this](https://ludeon.com/forums/index.php?topic=51589.0) if you want to try it, process should be similar to RimWorld. 
+1. Acquire development build from spajus. Note: spajus will not give the development build to strangers. There may be a possiblity to do this without the development build, but I couldn't get this to work. [Read this](https://ludeon.com/forums/index.php?topic=51589.0) if you want to try it, process should be similar to RimWorld.
 2. Put your mod into `Stardeus_Data/StreamingAssets/Mods/YourMod`. Copy and edit Template if needed.
 3. Make sure contents of `Stardeus_Data/boot.config` are as follows:
    ```
