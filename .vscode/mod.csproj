@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <LangVersion>9.0</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup>
         <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 
@@ -10,7 +12,7 @@
         <PlatformTarget>x64</PlatformTarget>
 
         <!-- Modify [RootNamespace], [AssemblyName], [OutputPath], [VersionPrefix] -->
-        <RootNamespace>Template</RootNamespace>
+        <RootNamespace>Game.ExampleMod</RootNamespace>
         <AssemblyName>Stardeus_Mod_Template</AssemblyName>
         <OutputPath>../Libraries</OutputPath>
         <VersionPrefix>1.0.0.0</VersionPrefix>
@@ -20,6 +22,14 @@
 
         <DebugSymbols>false</DebugSymbols>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    </PropertyGroup>
+    <PropertyGroup>
+        <NoConfig>true</NoConfig>
+        <NoStdLib>true</NoStdLib>
+        <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+        <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+        <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
     </PropertyGroup>
 
     <ItemGroup>
@@ -28,7 +38,11 @@
 
         <!-- Stardeus -->
         <!-- Make this path points to Stardeus/Stardeus_Data/Managed/*.dll on your system -->
+        <Reference Include="D:/SteamLibrary/steamapps/common/Stardeus/Stardeus_Data/Managed/Game.dll">
+            <Private>False</Private>
+        </Reference>
         <Reference Include="D:/SteamLibrary/steamapps/common/Stardeus/Stardeus_Data/Managed/*.dll">
+            <!-- Do not copy game DLL files to the output folder -->
             <Private>False</Private>
         </Reference>
     </ItemGroup>

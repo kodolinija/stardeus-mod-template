@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Game.AI;
+using Game.Components;
 using Game.Constants;
 using Game.Data;
 using Game.Utils;
 using UnityEngine;
 
-namespace Game.Components {
+namespace Game.ExampleMod.Components {
     // WARNING Don't forget to replace BaseComponent<ExampleModComp>
     // with correct component class name
     public sealed class ExampleModComp : BaseComponent<ExampleModComp>, IUIDataProvider,
@@ -15,7 +16,7 @@ namespace Game.Components {
         private static void Register() {
             // Uncomment the following with correct class name to register
             // the component at runtime when mod loads
-            // AddComponentPrototype(new ExampleComp());
+            AddComponentPrototype(new ExampleModComp());
         }
 
         private int stuff;
