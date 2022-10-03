@@ -1,0 +1,8 @@
+{
+    "omnisharp.analyzeOpenDocumentsOnly": false,
+    "omnisharp.autoStart": true,
+    "omnisharp.enableMsBuildLoadProjectsOnDemand": false,
+    "omnisharp.loggingLevel": "information",
+    "omnisharp.useModernNet": false
+
+}
