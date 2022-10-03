@@ -21,8 +21,12 @@
         <DebugType>none</DebugType>
 
         <DebugSymbols>false</DebugSymbols>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <PreserveCompilationContext>false</PreserveCompilationContext>
+        <PreserveCompilationReferences>false</PreserveCompilationReferences>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
     <PropertyGroup>
         <NoConfig>true</NoConfig>

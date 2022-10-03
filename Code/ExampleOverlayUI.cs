@@ -11,6 +11,8 @@ namespace Game.ExampleMod.UI {
         private readonly ExampleModSys sys;
         private readonly GameState S;
 
+        private readonly HashSet<string> foo = new();
+
         public ExampleOverlayUI(ExampleModSys sys) {
             this.sys = sys;
             S = sys.S;
