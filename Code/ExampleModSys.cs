@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Game.ExampleMod.UI;
+using ExampleMod.UI;
 using Game.Components;
 using Game.Constants;
 using Game.Data;
@@ -7,7 +7,7 @@ using Game.Systems;
 using KL.Utils;
 using UnityEngine;
 
-namespace Game.ExampleMod.Systems {
+namespace ExampleMod.Systems {
     public sealed class ExampleModSys : GameSystem, IOverlayProvider, ISaveable {
         // The convention is that all systems end with Sys, and SysId is equal to the class name
         public const string SysId = "ExampleModSys";

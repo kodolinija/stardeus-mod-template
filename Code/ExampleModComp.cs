@@ -6,7 +6,7 @@ using Game.Data;
 using Game.Utils;
 using UnityEngine;
 
-namespace Game.ExampleMod.Components {
+namespace ExampleMod.Components {
     // WARNING Don't forget to replace BaseComponent<ExampleModComp>
     // with correct component class name
     public sealed class ExampleModComp : BaseComponent<ExampleModComp>, IUIDataProvider,

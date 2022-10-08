@@ -4,9 +4,9 @@ using Game.Constants;
 using Game.Data;
 using Game.UI;
 using Game.Utils;
-using Game.ExampleMod.Systems;
+using ExampleMod.Systems;
 
-namespace Game.ExampleMod.UI {
+namespace ExampleMod.UI {
     public sealed class ExampleOverlayUI : IUIDataProvider {
         private readonly ExampleModSys sys;
         private readonly GameState S;
