@@ -6,14 +6,14 @@
     "configurations": [
         {
             "name": "Stardeus Mod Template",
-            "type": "clr",
             "request": "launch",
             "preLaunchTask": "build dll",
-            "args": [],
+            "type": "clr",
             // This should point to your Stardeus.exe
             // Note that Steam will relaunch the game, so if you are planning to use a debugger, you will have
             // to attach to the game *after* steam has relaunched it
-            "program": "D:/SteamLibrary/steamapps/common/Stardeus/Stardeus.exe",
+            "windows": {"type": "clr", "program": "D:/SteamLibrary/steamapps/common/Stardeus/Stardeus.exe"},
+            "linux": {"type":"coreclr", "program": "echo", "args":"It is advised to run from Steam Menu for Stardeus."},
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "internalConsoleOptions":"neverOpen",
@@ -22,7 +22,8 @@
 
         { // ignore
             "name": ".NET Framework Attach",
-            "type": "clr",
+            "windows": {"type": "clr"},
+            "linux": {"type":"coreclr"},
             "request": "attach",
             "processId": "${command:pickProcess}",
             "symbolOptions": {

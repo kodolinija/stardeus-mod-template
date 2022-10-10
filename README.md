@@ -9,14 +9,17 @@ See subfolders for more readme files on how to create Artwork, and Definitions.
 
 Best place to ask questions about modding Stardeus is on [Stardeus Discord](https://discord.com/invite/89amEwP), #stardeus-modding channel.
 
+
 ## How to compile a mod DLL with your code
+
+If you're on Linux, please refer to [Linux Build Instruction instead.](Linux.md)
 
 1. Make a copy of "stardeus-mod-template" folder, rename it to something else.
 2. Edit `ModInfo.json` and change the `Id`, `Name`, `Description` and other fields.
 3. Remove the `SteamWorkshopItemId` file.
 4. Edit `.vscode/mod.csproj` line 14 to set the name of the DLL file your mod will produce.
 5. Edit `.vscode/mod.csproj` line 31 to work with your system.
-6. Edit `.vscode/launch.json` line 16 to work with your system.
+6. Edit `.vscode/launch.json` line 15 to work with your system.
 7. Move the folder to the `Mods` directory near your `Saves`. You can open the folder from Stardeus itself, through `Main Menu > Mods > About Mods > Open User Mods Directory`.
 8. Open the folder with `Visual Studio Code`.
 9. Press `F5` to compile the DLL file and run Stardeus.
