@@ -36,6 +36,7 @@ Also for where you're going to put your mod folder at, it'll likely be under thi
 4. Edit `.vscode/mod.csproj` line 14 to set the name of the DLL file your mod will produce.
 5. Edit `.vscode/mod.csproj` line 31 to work with your system.
 6. Edit `.vscode/mod.csproj` to change the following lines:
+
 `<Reference Include="/home/{Your Username}/.local/share/Steam/steamapps/common/Stardeus Demo/Stardeus_Data/Managed/Game.dll">`
 
 and
