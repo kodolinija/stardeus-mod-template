@@ -37,11 +37,11 @@ Also for where you're going to put your mod folder at, it'll likely be under thi
 5. Edit `.vscode/mod.csproj` line 31 to work with your system.
 6. Edit `.vscode/mod.csproj` to change the following lines:
 
-`<Reference Include="/home/{Your Username}/.local/share/Steam/steamapps/common/Stardeus Demo/Stardeus_Data/Managed/Game.dll">`
+`<Reference Include="/home/{Your Username}/.local/share/Steam/steamapps/common/Stardeus/Stardeus_Data/Managed/Game.dll">`
 
 and
 
-`<Reference Include="/home/{Your Username}/.local/share/Steam/steamapps/common/Stardeus Demo/Stardeus_Data/Managed/*.dll">`
+`<Reference Include="/home/{Your Username}/.local/share/Steam/steamapps/common/Stardeus/Stardeus_Data/Managed/*.dll">`
 
 7. Open the folder with your favorite editor.
 8. When done writing your mod program, brings up a terminal with mod folder set as current directory and run `dotnet build .vscode`, or pick `Tasks: Run Build Task` from Command Palette in Visual Studio Code editor.
