@@ -11,3 +11,4 @@ Artwork/*.blend5
 Libraries/*.json
 
 .vscode/obj/
+obj/

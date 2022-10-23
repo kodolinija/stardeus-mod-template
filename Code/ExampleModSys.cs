@@ -3,6 +3,7 @@ using ExampleMod.UI;
 using Game.Components;
 using Game.Constants;
 using Game.Data;
+using Game.UI;
 using Game.Systems;
 using KL.Utils;
 using UnityEngine;
@@ -64,6 +65,8 @@ namespace ExampleMod.Systems {
         private void OnLoadSave(GameState state) {
             this.state = state;
             S.Clock.OnTick.AddListener(OnTick);
+            UIPopupWidget.Spawn(IconId.CWarning, "warning".T(),
+                "Note for mod developer. ExampleModSys should be removed from your mod");
         }
 
         // If your system depends on AreasSys, for example, you may want to
