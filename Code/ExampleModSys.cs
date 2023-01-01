@@ -7,6 +7,7 @@ using Game.UI;
 using Game.Systems;
 using KL.Utils;
 using UnityEngine;
+using Game.Utils;
 
 namespace ExampleMod.Systems {
     public sealed class ExampleModSys : GameSystem, IOverlayProvider, ISaveable {
@@ -72,17 +73,13 @@ namespace ExampleMod.Systems {
         // If your system depends on AreasSys, for example, you may want to
         // start ticking your system only after initial areas have been built
         private void OnAreasInit() {
-            S.Clock.OnTickAsync.AddListener(OnTickAsync);
+            D.Warn("Areas initialized");
         }
 
-        // OnTickAsync should be prefered over this
+        // OnTickAsync should be preferred over this
         private void OnTick(long ticks) {
             D.Warn("Ticking synchronously. Tick: {0}", ticks);
-        }
-
-        // If the simulation cannot keep up, delta will show how many ticks have been skipped since last call
-        private void OnTickAsync(long ticks, int delta) {
-            D.Warn("Ticking asynchronously. Tick: {0}, Delta: {1}", ticks, delta);
+            D.Err("PLEASE REMOVE Clock.OnTick LISTENER IF YOU DON'T NEED IT IN YOUR MOD");
         }
 
         public override void Unload() {
