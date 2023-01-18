@@ -55,8 +55,8 @@ namespace ExampleMod.UI {
         }
 
         public void GetUIDetails(List<UDB> res) {
-            header ??= UDB.Create(this, UDBT.IText, IconId.WClose,
-                "example.system".T()).AsHeader().WithIconClickFunction(HideOverlay);
+            header ??= UDB.Create(this, UDBT.DTextRBHeader, IconId.WList,
+                "example.system".T()).AsHeader().WithRBFunction(HideOverlay);
             res.Add(header);
 
             res.Add(UDB.Create(this, UDBT.IText, IconId.CInfo, "some.info".T())

@@ -10,7 +10,7 @@ namespace ExampleMod.Components {
     // WARNING Don't forget to replace BaseComponent<ExampleModComp>
     // with correct component class name
     public sealed class ExampleModComp : BaseComponent<ExampleModComp>, IUIDataProvider,
-            IUIContextMenuProvider, IAdvertProvider, IUIMultiSelectable {
+            IUIContextMenuProvider, IAdvertProvider, IUISubmenuProvider, IUIMultiSelectable {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.
             SubsystemRegistration)]
         private static void Register() {
@@ -22,7 +22,7 @@ namespace ExampleMod.Components {
         private int stuff;
 
         protected override void OnConfig() {
-            stuff = Config.GetInt("stuff");
+            stuff = Config.GetInt("Stuff");
         }
 
         public override void OnSave() {
@@ -61,9 +61,13 @@ namespace ExampleMod.Components {
 
         public bool IsReachableForCommonAction => true;
 
+        public bool HasSubmenuNow => true;
+
+        public string SubmenuTitle => "example.mod.submenu.title".T();
+
         public UDB GetUIBlock() {
-            // If it's not an energy enabled device, remove the isReachable check
-            if (!Tile.IsConstructed || !Tile.EnergyNode.IsConnected) {
+            // If it's not an energy enabled device, remove this check
+            if (!Tile.IsConstructed || !Tile.EnergyNode.IsReachable) {
                 return null;
             }
             dataBlock ??= UDB.Create(this,
@@ -82,6 +86,10 @@ namespace ExampleMod.Components {
         }
 
         public void GetUIDetails(List<UDB> res) {
+            // If it's not an energy enabled device, remove this check
+            if (!Tile.IsConstructed || !Tile.EnergyNode.IsReachable) {
+                return;
+            }
             res.Add(UDB.Create(this,
                     UDBT.DText,
                     IconId.CMissing,
@@ -92,6 +100,9 @@ namespace ExampleMod.Components {
         }
 
         public void ContextActions(List<UDB> res) {
+            // You can add different items in the context menu, the
+            // following will show info panel details submenu as the context menu
+            GetUIDetails(res);
         }
 
         public void CancelAdvert(string why) {

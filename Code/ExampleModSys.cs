@@ -52,7 +52,9 @@ namespace ExampleMod.Systems {
             S.Sig.ToggleOverlay.AddListener(OnToggleOverlay);
         }
 
-        private readonly OverlayInfo overlayInfo = new(20, SysId, "Icons/White/ExampleModIcon");
+        // You will have to create Graphics/Icons/White/ExampleModIcon.png
+        private readonly OverlayInfo overlayInfo = new OverlayInfo(20, SysId,
+            "Icons/White/ExampleModIcon");
 
         private void OnToggleOverlay(OverlayInfo info, bool on) {
             D.Err("Toggling overlay: {0} -> {1}", info.Id, on);

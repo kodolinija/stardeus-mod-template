@@ -1,4 +1,5 @@
 Key,Translation,Version,Comment (context for translators)
+example.mod.submenu.title,Example Submenu Title
 objects.devices.modtest,Mod Test,
 objects.devices.modtest.desc,Description about Mod Test device,
 example.translation.key,Example translation key,
