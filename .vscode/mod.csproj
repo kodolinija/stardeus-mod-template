@@ -12,8 +12,8 @@
         <PlatformTarget>x64</PlatformTarget>
 
         <!-- Modify [RootNamespace], [AssemblyName], [OutputPath], [VersionPrefix] -->
-        <RootNamespace>Game.ExampleMod</RootNamespace>
-        <AssemblyName>Stardeus_Mod_Template</AssemblyName>
+        <RootNamespace>IngredientBuffer</RootNamespace>
+        <AssemblyName>IngredientBuffer</AssemblyName>
         <OutputPath>../Libraries</OutputPath>
         <VersionPrefix>1.0.0.0</VersionPrefix>
 
@@ -27,6 +27,7 @@
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup>
         <NoConfig>true</NoConfig>
