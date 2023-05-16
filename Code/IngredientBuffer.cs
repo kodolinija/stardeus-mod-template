@@ -100,6 +100,8 @@ namespace IngredientBuffer
         {
             if (!isActive)
                 return;
+            if (ingredients == null)
+                return;
             if (!forced)
             {
                 //TODO request if buffer cannot afford another production
