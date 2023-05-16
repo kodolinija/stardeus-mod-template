@@ -126,6 +126,8 @@ namespace IngredientBuffer
         {
             if (!IsActive)
                 return;
+            if (ingredients == null)
+                return;
             for (int i = 0; i < ingredients.Length; i++)
             {
                 Mat mat = ingredients[i];
