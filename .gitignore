@@ -12,3 +12,5 @@ Libraries/*.json
 
 .vscode/obj/
 obj/
+.vscode/*
+.vscode/mod.csproj
