@@ -8,8 +8,11 @@ using Game;
 using Game.AI;
 using Game.Commands;
 using Game.Components;
+using Game.Constants;
 using Game.Data;
+using Game.Input;
 using Game.UI;
+using Game.Utils;
 using KL.Randomness;
 using KL.Utils;
 using UnityEngine;
@@ -37,6 +40,19 @@ namespace IngredientBuffer
 
 		static FieldInfo amountBlock = typeof(CrafterComp).GetField("amountBlock", BindingFlags.NonPublic | BindingFlags.Instance);
 
+		static FieldInfo showingUnconfiguredIcon = typeof(CrafterComp).GetField("showingUnconfiguredIcon", BindingFlags.NonPublic | BindingFlags.Instance);
+		static FieldInfo demandBlock = typeof(CrafterComp).GetField("demandBlock", BindingFlags.NonPublic | BindingFlags.Instance);
+		static MethodInfo IngredientsFor = typeof(CrafterComp).GetMethod("IngredientsFor", BindingFlags.NonPublic | BindingFlags.Instance);
+		static MethodInfo CheckMissingIngredients = typeof(CrafterComp).GetMethod("CheckMissingIngredients", BindingFlags.NonPublic | BindingFlags.Instance);
+		static MethodInfo MaybeHintCraftingTargetInventory = typeof(CrafterComp).GetMethod("MaybeHintCraftingTargetInventory", BindingFlags.NonPublic | BindingFlags.Instance);
+
+		static FieldInfo idleGroupId = typeof(CrafterComp).GetField("idleGroupId", BindingFlags.NonPublic | BindingFlags.Instance);
+		static FieldInfo idleTitle = typeof(CrafterComp).GetField("idleTitle", BindingFlags.NonPublic | BindingFlags.Instance);
+		static FieldInfo colChoice = typeof(CrafterComp).GetField("colChoice", BindingFlags.NonPublic | BindingFlags.Instance);
+		static MethodInfo CancelHaulingAd = typeof(CrafterComp).GetMethod("CancelHaulingAd", BindingFlags.NonPublic | BindingFlags.Instance);
+		static MethodInfo HideIdleNotification = typeof(CrafterComp).GetMethod("HideIdleNotification", BindingFlags.NonPublic | BindingFlags.Instance);
+		static FieldInfo ingredientBlocks = typeof(CrafterComp).GetField("ingredientBlocks", BindingFlags.NonPublic | BindingFlags.Instance);
+
 		public static Mat[] GetIngredients(this CrafterComp This)
         {
 			return (Mat[])ingredients.GetValue(This);
@@ -45,6 +61,17 @@ namespace IngredientBuffer
         {
 			return (Advert)currentAd.GetValue(This);
         }
+		public static void TriggerHaulingAdNow(this CrafterComp This)
+        {
+			if (This.MissingMats.Count == 0)
+				return;
+			Advert ad = This.CreateAdvert("Hauling", "Icons/Color/Store", T.HaulIngredients)
+							.WithPromise(NeedId.Purpose, 5).MarkAsWork(false)
+							.WithPriority(((int)craftPriority.GetValue(This)))
+							.AndThen("GatherRawMaterials", T.GatherMaterials, NeedId.Purpose, 5)
+							.Publish(true);
+			currentAd.SetValue(This, ad);
+		}
 
 		public static void OnLateReady(this CrafterComp This, bool wasLoaded)
 		{
@@ -84,7 +111,7 @@ namespace IngredientBuffer
 			{
 				((MatDeficitEventHolder)deficitEv.GetValue(This)).Load(data);
 				ingredients.SetValue(This, data.GetMats("Ingredients", null));
-				if (ingredients == null)
+				if (ingredients.GetValue(This) == null)
 				{
 					SetIngredients.Invoke(This, null);
 				}
@@ -138,6 +165,8 @@ namespace IngredientBuffer
 					if (diff > 0)
 					{
 						int wantedAmount = Mathf.Min(diff, unstoredMat.StackSize);
+						if (wantedAmount == 0)
+							continue;
 						wantedAmount = unstoredMat.Take(mat.Type, null, wantedAmount, (Advert)currentAd.GetValue(This));
 						mat.StackSize += wantedAmount;
 						array[i] = mat;
@@ -236,6 +265,69 @@ namespace IngredientBuffer
 			This.TotalProduced++;
 		}
 
+		public static void SwitchToCrafting(this CrafterComp This, Craftable craftable)
+		{
+			if (craftable != null)
+			{
+				if (craftable.ProductDef == null)
+				{
+					D.Err("Cannot switch to crafting {0}. Product def is not available!", craftable.ProductDefId);
+					UIPopupWidget.Spawn("Icons/Color/Warning", "MISCONFIGURED CRAFTABLE", "Cannot craft <b>" + craftable.ProductDefId + "</b> - Definition does not exist. It could be a problem with a mod.");
+				}
+				else
+				{
+					if ((bool)showingUnconfiguredIcon.GetValue(This))
+					{
+						showingUnconfiguredIcon.SetValue(This,false);
+						This.HideInfoIcon();
+					}
+					demandBlock.SetValue(This, null);
+					This.Demand = CraftingDemand.CreateFor(craftable);
+					ingredients.SetValue(This,IngredientsFor.Invoke(This,new object[] { craftable }));
+					This.Progress = 0f;
+					((ExtraInfoComp)extraInfo.GetValue(This))?.ShowInfoIcon(This.Demand.Product.Preview, This.Demand.Product.NameT);
+					CheckMissingIngredients.Invoke(This, new object[] { true });
+					UpdateExtraInfo.Invoke(This,null);
+					MaybeHintCraftingTargetInventory.Invoke(This,null);
+
+					IngredientBufferTracker.SwitchToCrafting(This);
+				}
+			}
+		}
+
+		public static void StopProducing(this CrafterComp This)
+		{
+			This.Demand = null;
+			idleGroupId.SetValue(This, null);
+			idleTitle.SetValue(This, null);
+			This.Progress = 0f;
+			colChoice.SetValue(This, null);
+			CancelHaulingAd.Invoke(This, new object[] { "Stopped production" });
+			HideIcon.Invoke(This,null);
+			HideIdleNotification.Invoke(This,null);
+			UpdateExtraInfo.Invoke(This,null);
+			((MatDeficitEventHolder)deficitEv.GetValue(This)).Clear();
+			Mat[] array=(Mat[])ingredients.GetValue(This);
+			if (!Arrays.IsEmpty(array))
+			{
+				foreach (Mat mat in array)
+				{
+					if (mat.StackSize >= 1)
+					{
+						EntityUtils.SpawnRawMaterial(mat, This.Tile.Transform.WorkSpot, 0.5f, true, true);
+					}
+				}
+				if (demandBlock.GetValue(This) != null)
+				{
+					((UDB)demandBlock.GetValue(This)).NeedsListRebuild = true;
+				}
+				ingredients.SetValue(This, null);
+				((Dictionary<MatType,UDB>)ingredientBlocks.GetValue(This)).Clear();
+			}
+
+			IngredientBufferTracker.StopProducing(This);
+		}
+
 		//TODO move this into ghost comp
 		public static void ContextActions(this CrafterComp This, List<UDB> res)
 		{
@@ -244,10 +336,98 @@ namespace IngredientBuffer
 				This.GetUIDetails(res);
 			}
 
-			
-			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "isActive")
-				.WithText2("Toggle")
-				.WithClickFunction(delegate { IngredientBufferTracker.toggleActive(This); }));
+			IngredientBuffer buffer=IngredientBufferTracker.GetBuffer(This);
+
+			res.Add(UDB.Create(This, UDBT.DTextBtn, buffer.IsActive ? "Icons/Color/Check" : "Icons/Color/Cross", "isActive")
+				.WithText2(T.Toggle)
+				.WithClickFunction(delegate { buffer.IsActive = !buffer.IsActive; }));
+			res.Add(UDB.Create(This, UDBT.DTextBtn, buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross", "fillCrafterInventoryFirst")
+				.WithText2(T.Toggle)
+				.WithClickFunction(delegate { buffer.fillCrafterInventoryFirst=!buffer.fillCrafterInventoryFirst; }));
+
+            if (buffer.ingredients != null)
+            {
+				Mat product = buffer.GetPotentialBufferProduction();
+				UDB udbProduct;
+				//do not use MatType because output might be beings
+				udbProduct = UDB.Create(This, UDBT.IProgress, This.Demand.Craftable.ProductDef.Preview, This.Demand.Craftable.ProductDef.NameT);
+				udbProduct.UpdateValue(product.StackSize);
+				udbProduct.UpdateRange(0f, product.MaxStackSize);
+				res.Add(udbProduct);
+
+				res.Add(UDB.Create(This, UDBT.DSlider, "Icons/Color/Store", "refillThreshold").WithRange(1f, Mathf.Max(product.MaxStackSize, 1))
+					.WithValueOf(buffer.RefillThreshold)
+					.WithValueChangeFunction(delegate (UDB b, object v)
+					{
+						buffer.RefillThreshold = Mathf.RoundToInt((float)v);
+					}));
+
+				res.Add(UDB.Create(This, UDBT.DSlider, "Icons/Color/Warning", "haulingBatchSize").WithRange(1f, 100f)
+					.WithValueOf(buffer.haulingBatchSize)
+					.WithValueChangeFunction(delegate (UDB b, object v)
+					{
+						buffer.haulingBatchSize = Mathf.RoundToInt((float)v);
+					}));
+				res.Add(UDB.Create(This, UDBT.DBtn, "Icons/Color/Store", "refill now")
+					.WithClickFunction(delegate
+					{
+                        if (This.GetCurrentAd() == null||This.GetCurrentAd().IsCancelled||This.GetCurrentAd().IsCompleted)
+                        {
+							This.RebuildIngredientsReq();
+							This.TriggerHaulingAdNow();
+						}
+					}));
+
+				for (int i=0;i<buffer.ingredients.Length;i++)
+                {
+					Mat mat=buffer.ingredients[i];
+					int hash = buffer.ingredientHash;
+					int index = i;
+					string text;
+					string o = The.Bindings.GetBinding(ActionType.ShiftModifier).AllControlGlyphs(out text, "<br>", false);
+					string o2 = The.Bindings.GetBinding(ActionType.CtrlModifier).AllControlGlyphs(out text, "<br>", false);
+					UDB udb = UDB.Create(This, UDBT.IPriority, mat.Type.IconId, mat.Type.NameT)
+						.WithTooltip("priority.block.shift.tip".T(o, o2));
+					udb.UpdateValue(buffer.ingredients[i].StackSize);
+					udb.UpdateRange(0f, buffer.ingredients[i].MaxStackSize);
+					udb.WithClickFunction(delegate
+						{
+							int delta = -1;
+							if (The.Bindings.IsPressed(ActionType.CtrlModifier))
+							{
+								delta = -50;
+							}
+							else if (The.Bindings.IsPressed(ActionType.ShiftModifier))
+							{
+								delta = -10;
+							}
+							if(buffer.TryAdjustMaxStackSize(hash, index, delta))
+                            {
+								udb.UpdateValue(buffer.ingredients[index].StackSize);
+								udb.UpdateRange(0f, buffer.ingredients[index].MaxStackSize);
+                            }
+						}).WithClick2Function(delegate
+						{
+							int delta = 1;
+							if (The.Bindings.IsPressed(ActionType.CtrlModifier))
+							{
+								delta = 50;
+							}
+							else if (The.Bindings.IsPressed(ActionType.ShiftModifier))
+							{
+								delta = 10;
+							}
+							if (buffer.TryAdjustMaxStackSize(hash, index, delta))
+                            {
+								udb.UpdateValue(buffer.ingredients[index].StackSize);
+								udb.UpdateRange(0f, buffer.ingredients[index].MaxStackSize);
+							}
+						});
+					res.Add(udb);
+				}
+            }
+
+
 			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "buffer")
 				.WithText2("Peek")
 				.WithClickFunction(delegate { UIPopupWidget.Spawn("Icons/Color/Warning", "Buffer", IngredientBufferTracker.peekBuffer(This)); }));
@@ -261,11 +441,6 @@ namespace IngredientBuffer
 						sb.Append(mr.Amount).Append(mr.Type.NameT).AppendLine();
 					UIPopupWidget.Spawn("Icons/Color/Warning", "MissingMats",sb.ToString());
 				}));
-
-
-			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "test value")
-				.WithText2(IngredientBufferTracker.getInt(This).ToString())
-				.WithClickFunction(delegate { IngredientBufferTracker.incInt(This); }));
 		}
 	}
 }

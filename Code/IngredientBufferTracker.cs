@@ -35,7 +35,6 @@ namespace IngredientBuffer
             {
                 //newly built assembler compatibility
                 IngredientBuffer buffer = new IngredientBuffer(comp);
-                buffer.testvalue = UnityEngine.Random.Range(0, 1000);
                 buffer.IsActive = true;
                 crafterBuffer.Add(comp, buffer);
             }
@@ -44,7 +43,6 @@ namespace IngredientBuffer
         public static void OnSave(CrafterComp comp, ComponentData data)
         {
             D.Err("OnSave");
-            data.SetInt("test_rand", crafterBuffer[comp].testvalue);
             crafterBuffer[comp].OnSave(data);
         }
 
@@ -52,7 +50,6 @@ namespace IngredientBuffer
         {
             D.Err("OnLoad");
             IngredientBuffer buffer = new IngredientBuffer(comp);
-            buffer.testvalue = data.GetInt("test_rand", UnityEngine.Random.Range(0, 1000));
             buffer.OnLoad(data);
             crafterBuffer.Add(comp, buffer);
         }
@@ -72,6 +69,23 @@ namespace IngredientBuffer
             crafterBuffer[comp].FillFromBuffer();
         }
 
+        public static IngredientBuffer GetBuffer(CrafterComp comp)
+        {
+            return crafterBuffer[comp];
+        }
+
+        public static void SwitchToCrafting(CrafterComp comp)
+        {
+            IngredientBuffer buffer=crafterBuffer[comp];
+            //it's not redundant!
+            buffer.IsActive = buffer.IsActive;
+        }
+
+        public static void StopProducing(CrafterComp comp)
+        {
+            crafterBuffer[comp].TryEjectBuffer();
+        }
+
         //cannot detour OnRemove without modifying BaseComponent<T>.OnRemove or other methods
         //TODO impl with ghost comp
         public static void OnRemove(CrafterComp comp)
@@ -80,33 +94,20 @@ namespace IngredientBuffer
         }
 
         [Obsolete]
-        public static int getInt(CrafterComp comp)
-        {
-            return crafterBuffer[comp].testvalue;
-        }
-        [Obsolete]
-        public static void incInt(CrafterComp comp)
-        {
-            crafterBuffer[comp].testvalue += 1;
-        }
-        [Obsolete]
         public static string peekBuffer(CrafterComp comp)
         {
             IngredientBuffer buffer=crafterBuffer[comp];
             StringBuilder sb=new StringBuilder();
             sb.Append("isActive: ").Append(buffer.IsActive).AppendLine();
-            sb.Append("fillCompletelyBeforeCrafting: ").Append(buffer.fillCompletelyBeforeCrafting).AppendLine();
+            sb.Append("fillCompletelyBeforeCrafting: ").Append(buffer.fillCrafterInventoryFirst).AppendLine();
+            sb.Append("refillThreshold: ").Append(buffer.RefillThreshold).AppendLine();
+            sb.Append("haulingBatchSize: ").Append(buffer.haulingBatchSize).AppendLine();
             sb.Append("ingredients: ").AppendLine();
             if(buffer.ingredients==null)
                 return sb.Append("null").ToString();
             foreach (Mat mat in buffer.ingredients)
                 sb.Append(mat.StackSize).Append("/").Append(mat.MaxStackSize).Append(" ").Append(mat.Type.NameT).AppendLine();
             return sb.ToString();
-        }
-        [Obsolete]
-        public static void toggleActive(CrafterComp comp)
-        {
-            crafterBuffer[comp].IsActive = !crafterBuffer[comp].IsActive;
         }
     }
 }

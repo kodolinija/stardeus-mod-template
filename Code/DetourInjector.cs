@@ -96,27 +96,15 @@ namespace IngredientBuffer
             source.Add(ts.GetMethod("SpawnCraftable", NonPublic));
             method.Add(tm.GetMethod("SpawnCraftable", Any));
 
+            source.Add(ts.GetMethod("SwitchToCrafting", Public));
+            method.Add(tm.GetMethod("SwitchToCrafting", Any));
+
+            source.Add(ts.GetMethod("StopProducing", Public));
+            method.Add(tm.GetMethod("StopProducing", Any));
+
             source.Add(ts.GetMethod("ContextActions", Public));
             method.Add(tm.GetMethod("ContextActions", Any));
-            /*
-            source.Add(ts.GetMethod("OnRemove", Public));
-            method.Add(tm.GetMethod("OnRemove", Any));
-
-            source.Add(ts.GetMethod("ShowCooldownDialog", NonPublic));
-            method.Add(tm.GetMethod("ShowCooldownDialog", Any));
-
-            source.Add(ts.GetMethod("CheckFragmentation", Public));
-            method.Add(tm.GetMethod("CheckFragmentation", Any));
-
-            source.Add(ts.GetMethod("UpdateUIBlock", NonPublic));
-            method.Add(tm.GetMethod("UpdateUIBlock", Any));
-
-            source.Add(ts.GetMethod("GetUIDetails", Public));
-            method.Add(tm.GetMethod("GetUIDetails", Any));
-
-            source.Add(ts.GetMethod("RelocateTo", Public));
-            method.Add(tm.GetMethod("RelocateTo", Any));
-            */
+            
 
             if (source.Count != method.Count)
                 return false;
