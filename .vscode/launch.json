@@ -7,7 +7,7 @@
         {
             "name": "Stardeus Mod Template",
             "request": "launch",
-            "preLaunchTask": "build dll",
+            "preLaunchTask": "build",
             "type": "clr",
             // This should point to your Stardeus.exe
             // Note that Steam will relaunch the game, so if you are planning to use a debugger, you will have

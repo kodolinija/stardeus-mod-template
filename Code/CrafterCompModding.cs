@@ -428,7 +428,7 @@ namespace IngredientBuffer
             }
 
 
-			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "buffer")
+			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Asmblbuff/gggg", "buffer")
 				.WithText2("Peek")
 				.WithClickFunction(delegate { UIPopupWidget.Spawn("Icons/Color/Warning", "Buffer", IngredientBufferTracker.peekBuffer(This)); }));
 			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "progress to 99%")
