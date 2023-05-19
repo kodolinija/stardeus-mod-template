@@ -101,9 +101,6 @@ namespace IngredientBuffer
 
             source.Add(ts.GetMethod("StopProducing", Public));
             method.Add(tm.GetMethod("StopProducing", Any));
-
-            source.Add(ts.GetMethod("ContextActions", Public));
-            method.Add(tm.GetMethod("ContextActions", Any));
             
 
             if (source.Count != method.Count)

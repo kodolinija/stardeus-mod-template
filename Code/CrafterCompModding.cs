@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Game;
 using Game.AI;
@@ -10,9 +6,7 @@ using Game.Commands;
 using Game.Components;
 using Game.Constants;
 using Game.Data;
-using Game.Input;
 using Game.UI;
-using Game.Utils;
 using KL.Randomness;
 using KL.Utils;
 using UnityEngine;
@@ -61,9 +55,14 @@ namespace IngredientBuffer
         {
 			return (Advert)currentAd.GetValue(This);
         }
+		public static bool HasCurrentAd(this CrafterComp This)
+        {
+			Advert ad=(Advert)currentAd.GetValue(This);
+			return ad != null && !ad.IsCancelled && !ad.IsCompleted;
+        }
 		public static void TriggerHaulingAdNow(this CrafterComp This)
         {
-			if (This.MissingMats.Count == 0)
+			if (This.MissingMats.Count == 0 || This.HasCurrentAd())
 				return;
 			Advert ad = This.CreateAdvert("Hauling", "Icons/Color/Store", T.HaulIngredients)
 							.WithPromise(NeedId.Purpose, 5).MarkAsWork(false)
@@ -285,12 +284,13 @@ namespace IngredientBuffer
 					This.Demand = CraftingDemand.CreateFor(craftable);
 					ingredients.SetValue(This,IngredientsFor.Invoke(This,new object[] { craftable }));
 					This.Progress = 0f;
+
+					IngredientBufferTracker.SwitchToCrafting(This);
+
 					((ExtraInfoComp)extraInfo.GetValue(This))?.ShowInfoIcon(This.Demand.Product.Preview, This.Demand.Product.NameT);
 					CheckMissingIngredients.Invoke(This, new object[] { true });
 					UpdateExtraInfo.Invoke(This,null);
 					MaybeHintCraftingTargetInventory.Invoke(This,null);
-
-					IngredientBufferTracker.SwitchToCrafting(This);
 				}
 			}
 		}
@@ -326,121 +326,6 @@ namespace IngredientBuffer
 			}
 
 			IngredientBufferTracker.StopProducing(This);
-		}
-
-		//TODO move this into ghost comp
-		public static void ContextActions(this CrafterComp This, List<UDB> res)
-		{
-			if (This.Tile.IsConstructed && This.Tile.EnergyNode.IsReachable)
-			{
-				This.GetUIDetails(res);
-			}
-
-			IngredientBuffer buffer=IngredientBufferTracker.GetBuffer(This);
-
-			res.Add(UDB.Create(This, UDBT.DTextBtn, buffer.IsActive ? "Icons/Color/Check" : "Icons/Color/Cross", "isActive")
-				.WithText2(T.Toggle)
-				.WithClickFunction(delegate { buffer.IsActive = !buffer.IsActive; }));
-			res.Add(UDB.Create(This, UDBT.DTextBtn, buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross", "fillCrafterInventoryFirst")
-				.WithText2(T.Toggle)
-				.WithClickFunction(delegate { buffer.fillCrafterInventoryFirst=!buffer.fillCrafterInventoryFirst; }));
-
-            if (buffer.ingredients != null)
-            {
-				Mat product = buffer.GetPotentialBufferProduction();
-				UDB udbProduct;
-				//do not use MatType because output might be beings
-				udbProduct = UDB.Create(This, UDBT.IProgress, This.Demand.Craftable.ProductDef.Preview, This.Demand.Craftable.ProductDef.NameT);
-				udbProduct.UpdateValue(product.StackSize);
-				udbProduct.UpdateRange(0f, product.MaxStackSize);
-				res.Add(udbProduct);
-
-				res.Add(UDB.Create(This, UDBT.DSlider, "Icons/Color/Store", "refillThreshold").WithRange(1f, Mathf.Max(product.MaxStackSize, 1))
-					.WithValueOf(buffer.RefillThreshold)
-					.WithValueChangeFunction(delegate (UDB b, object v)
-					{
-						buffer.RefillThreshold = Mathf.RoundToInt((float)v);
-					}));
-
-				res.Add(UDB.Create(This, UDBT.DSlider, "Icons/Color/Warning", "haulingBatchSize").WithRange(1f, 100f)
-					.WithValueOf(buffer.haulingBatchSize)
-					.WithValueChangeFunction(delegate (UDB b, object v)
-					{
-						buffer.haulingBatchSize = Mathf.RoundToInt((float)v);
-					}));
-				res.Add(UDB.Create(This, UDBT.DBtn, "Icons/Color/Store", "refill now")
-					.WithClickFunction(delegate
-					{
-                        if (This.GetCurrentAd() == null||This.GetCurrentAd().IsCancelled||This.GetCurrentAd().IsCompleted)
-                        {
-							This.RebuildIngredientsReq();
-							This.TriggerHaulingAdNow();
-						}
-					}));
-
-				for (int i=0;i<buffer.ingredients.Length;i++)
-                {
-					Mat mat=buffer.ingredients[i];
-					int hash = buffer.ingredientHash;
-					int index = i;
-					string text;
-					string o = The.Bindings.GetBinding(ActionType.ShiftModifier).AllControlGlyphs(out text, "<br>", false);
-					string o2 = The.Bindings.GetBinding(ActionType.CtrlModifier).AllControlGlyphs(out text, "<br>", false);
-					UDB udb = UDB.Create(This, UDBT.IPriority, mat.Type.IconId, mat.Type.NameT)
-						.WithTooltip("priority.block.shift.tip".T(o, o2));
-					udb.UpdateValue(buffer.ingredients[i].StackSize);
-					udb.UpdateRange(0f, buffer.ingredients[i].MaxStackSize);
-					udb.WithClickFunction(delegate
-						{
-							int delta = -1;
-							if (The.Bindings.IsPressed(ActionType.CtrlModifier))
-							{
-								delta = -50;
-							}
-							else if (The.Bindings.IsPressed(ActionType.ShiftModifier))
-							{
-								delta = -10;
-							}
-							if(buffer.TryAdjustMaxStackSize(hash, index, delta))
-                            {
-								udb.UpdateValue(buffer.ingredients[index].StackSize);
-								udb.UpdateRange(0f, buffer.ingredients[index].MaxStackSize);
-                            }
-						}).WithClick2Function(delegate
-						{
-							int delta = 1;
-							if (The.Bindings.IsPressed(ActionType.CtrlModifier))
-							{
-								delta = 50;
-							}
-							else if (The.Bindings.IsPressed(ActionType.ShiftModifier))
-							{
-								delta = 10;
-							}
-							if (buffer.TryAdjustMaxStackSize(hash, index, delta))
-                            {
-								udb.UpdateValue(buffer.ingredients[index].StackSize);
-								udb.UpdateRange(0f, buffer.ingredients[index].MaxStackSize);
-							}
-						});
-					res.Add(udb);
-				}
-            }
-
-
-			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Asmblbuff/gggg", "buffer")
-				.WithText2("Peek")
-				.WithClickFunction(delegate { UIPopupWidget.Spawn("Icons/Color/Warning", "Buffer", IngredientBufferTracker.peekBuffer(This)); }));
-			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "progress to 99%")
-				.WithText2("Set")
-				.WithClickFunction(delegate { This.Progress = 0.99f; }));
-			res.Add(UDB.Create(This, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "missing mats")
-				.WithText2("Peek")
-				.WithClickFunction(delegate { StringBuilder sb = new StringBuilder();
-					foreach(MatRequest mr in This.MissingMats)
-						sb.Append(mr.Amount).Append(mr.Type.NameT).AppendLine();
-					UIPopupWidget.Spawn("Icons/Color/Warning", "MissingMats",sb.ToString());
-				}));
 		}
 	}
 }

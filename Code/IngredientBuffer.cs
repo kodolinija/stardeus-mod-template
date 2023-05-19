@@ -13,9 +13,9 @@ namespace IngredientBuffer
         public int haulingBatchSize = 20;
 
         public Mat[] ingredients = null;
-        public int ingredientHash = 0;
 
         public CrafterComp comp;
+        public IngredientBufferComp wrapper;
 
         private int refillThreshold = 1;
         public int RefillThreshold
@@ -26,9 +26,12 @@ namespace IngredientBuffer
                 refillThreshold = value;
                 if (isActive && ingredients != null && comp.Demand != null)
                 {
+                    if (comp.HasCurrentAd())
+                        return;
                     if (GetPotentialBufferProduction().StackSize < refillThreshold)
                     {
                         comp.RebuildIngredientsReq();
+                        comp.TriggerHaulingAdNow();
                     }
                 }
             }
@@ -43,12 +46,15 @@ namespace IngredientBuffer
                 isActive = value;
                 if (isActive && comp.Demand != null)
                 {
-                    if(!VerifyBuffer())
+                    if (!VerifyBuffer())
+                    {
                         RebuildBuffer();
+                    }
                 }
                 if (!isActive)
                 {
                     TryEjectBuffer();
+                    refillThreshold = 1;
                 }
             }
         }
@@ -82,7 +88,6 @@ namespace IngredientBuffer
                     MaxStackSize = array[i].StackSize
                 };
             }
-            ingredientHash += 1;
         }
 
         public void TryEjectBuffer()
@@ -100,9 +105,9 @@ namespace IngredientBuffer
             }
         }
 
-        public bool TryAdjustMaxStackSize(int hash, int index, int delta)
+        public bool TryAdjustMaxStackSize(int index, int delta)
         {
-            if (ingredients == null || ingredientHash != hash || index >= ingredients.Length)
+            if (ingredients == null || index >= ingredients.Length)
                 return false;
             Mat[] mats=comp.GetIngredients();
             if (mats == null || index >= mats.Length)
@@ -169,6 +174,8 @@ namespace IngredientBuffer
             refillThreshold = data.GetInt("refillThreshold", 1);
             haulingBatchSize = data.GetInt("haulingBatchSize", 20);
             IsActive = true;
+            //activate threshold check and publish hauling ad if possible
+            RefillThreshold = refillThreshold;
         }
 
         public void RebuildIngredientsReq(bool skipThresholdCheck=false)
@@ -212,6 +219,12 @@ namespace IngredientBuffer
                 }
             }
             comp.MissingMats.AddRange(list);
+            //no UI updates during OnLoad()
+            if (wrapper != null)
+            {
+                wrapper.GetUIBlock().NeedsListRebuild = true;
+                wrapper.UpdateUIDetails();
+            }
         }
 
         public void ProvideRequestedMat(UnstoredMatComp unstoredMat)
@@ -261,7 +274,8 @@ namespace IngredientBuffer
             {
                 RebuildIngredientsReq(true);
                 comp.TriggerHaulingAdNow();
-            } 
+            }
+            wrapper.UpdateUIDetails();
         }
     }
 }

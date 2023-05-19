@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Game;
-using Game.AI;
 using Game.Components;
-using Game.Data;
 using KL.Utils;
 using UnityEngine;
 
@@ -31,6 +25,7 @@ namespace IngredientBuffer
         public static void OnLateReady(CrafterComp comp)
         {
             D.Err("OnLateReady");
+            
             if (!crafterBuffer.ContainsKey(comp))
             {
                 //newly built assembler compatibility
@@ -38,6 +33,15 @@ namespace IngredientBuffer
                 buffer.IsActive = true;
                 crafterBuffer.Add(comp, buffer);
             }
+            IngredientBufferComp bufferComp = comp.Entity.GetComponent<IngredientBufferComp>();
+            if (bufferComp == null)
+            {
+                //dynamic CrafterComp support
+                bufferComp = new IngredientBufferComp();
+                comp.Entity.AddComponent(bufferComp);
+            }
+            crafterBuffer[comp].wrapper = bufferComp;
+            bufferComp.buffer = crafterBuffer[comp];
         }
 
         public static void OnSave(CrafterComp comp, ComponentData data)
@@ -50,8 +54,8 @@ namespace IngredientBuffer
         {
             D.Err("OnLoad");
             IngredientBuffer buffer = new IngredientBuffer(comp);
-            buffer.OnLoad(data);
             crafterBuffer.Add(comp, buffer);
+            buffer.OnLoad(data);
         }
 
         public static void RebuildingredientsReq(CrafterComp comp)
@@ -69,21 +73,19 @@ namespace IngredientBuffer
             crafterBuffer[comp].FillFromBuffer();
         }
 
-        public static IngredientBuffer GetBuffer(CrafterComp comp)
-        {
-            return crafterBuffer[comp];
-        }
-
         public static void SwitchToCrafting(CrafterComp comp)
         {
             IngredientBuffer buffer=crafterBuffer[comp];
             //it's not redundant!
             buffer.IsActive = buffer.IsActive;
+            buffer.wrapper.OnRecipeChange();
         }
 
         public static void StopProducing(CrafterComp comp)
         {
+            crafterBuffer[comp].wrapper.GetUIBlock().NeedsListRebuild = true;
             crafterBuffer[comp].TryEjectBuffer();
+            crafterBuffer[comp].RefillThreshold = 1;
         }
 
         //cannot detour OnRemove without modifying BaseComponent<T>.OnRemove or other methods
@@ -91,23 +93,6 @@ namespace IngredientBuffer
         public static void OnRemove(CrafterComp comp)
         {
             D.Err("OnRemove");
-        }
-
-        [Obsolete]
-        public static string peekBuffer(CrafterComp comp)
-        {
-            IngredientBuffer buffer=crafterBuffer[comp];
-            StringBuilder sb=new StringBuilder();
-            sb.Append("isActive: ").Append(buffer.IsActive).AppendLine();
-            sb.Append("fillCompletelyBeforeCrafting: ").Append(buffer.fillCrafterInventoryFirst).AppendLine();
-            sb.Append("refillThreshold: ").Append(buffer.RefillThreshold).AppendLine();
-            sb.Append("haulingBatchSize: ").Append(buffer.haulingBatchSize).AppendLine();
-            sb.Append("ingredients: ").AppendLine();
-            if(buffer.ingredients==null)
-                return sb.Append("null").ToString();
-            foreach (Mat mat in buffer.ingredients)
-                sb.Append(mat.StackSize).Append("/").Append(mat.MaxStackSize).Append(" ").Append(mat.Type.NameT).AppendLine();
-            return sb.ToString();
         }
     }
 }
