@@ -20,6 +20,8 @@ namespace ExampleMod.Components {
         }
 
         private int stuff;
+        // If you want this to be an electric device
+        private ElectricNodeComp elNode;
 
         protected override void OnConfig() {
             stuff = Config.GetInt("Stuff");
@@ -45,6 +47,25 @@ namespace ExampleMod.Components {
         }
 
         public override void Receive(IComponent sender, int message) {
+            // This is the right way to hook into the electricity system
+            if (message == MsgIdH.ElectricNodeAdded) {
+                if (sender is ElectricNodeComp elNode) {
+                    this.elNode = elNode;
+                    // This device will attempt to consume 10kW when plugged in
+                    elNode.SetConsumerWantedInput(10f);
+                    elNode.AddAfterTick(this, AfterTickGrid);
+                }
+            }
+        }
+
+        //This runs every 10 ticks.
+        private void AfterTickGrid() {
+            if (!elNode.IsPowerable) {
+                // The device is disconnected or turned off
+            }
+            if (elNode.IsConsuming) {
+                // device is consuming power, it can now perform something.
+            }
         }
 
         public override void OnRemove() {
@@ -66,8 +87,8 @@ namespace ExampleMod.Components {
         public string SubmenuTitle => "example.mod.submenu.title".T();
 
         public UDB GetUIBlock() {
-            // If it's not an energy enabled device, remove this check
-            if (!Tile.IsConstructed || !Tile.EnergyNode.IsReachable) {
+            // If it's not an energy enabled device, remove the ENode check
+            if (!Tile.IsConstructed || !Tile.ENode.IsReachable) {
                 return null;
             }
             dataBlock ??= UDB.Create(this,
@@ -86,8 +107,8 @@ namespace ExampleMod.Components {
         }
 
         public void GetUIDetails(List<UDB> res) {
-            // If it's not an energy enabled device, remove this check
-            if (!Tile.IsConstructed || !Tile.EnergyNode.IsReachable) {
+            // If it's not an energy enabled device, remove the ENode check
+            if (!Tile.IsConstructed || !Tile.ENode.IsReachable) {
                 return;
             }
             res.Add(UDB.Create(this,
