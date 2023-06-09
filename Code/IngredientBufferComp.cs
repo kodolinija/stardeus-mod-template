@@ -74,7 +74,7 @@ namespace IngredientBuffer
 
         public UDB GetUIBlock()
         {
-            if(base.Tile.IsConstructed && base.Tile.EnergyNode.IsReachable)
+            if(base.Tile.IsConstructed && base.Tile.ENode.IsReachable)
             {
                 if (buffer.IsActive && buffer.ingredients != null)
                 {
