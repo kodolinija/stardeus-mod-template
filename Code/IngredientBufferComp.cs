@@ -327,7 +327,7 @@ namespace IngredientBuffer
                 .WithClickFunction(delegate {
                     StringBuilder sb = new StringBuilder();
                     sb.Append("isActive: ").Append(buffer.IsActive).AppendLine();
-                    sb.Append("fillCompletelyBeforeCrafting: ").Append(buffer.fillCrafterInventoryFirst).AppendLine();
+                    sb.Append("fillCrafterInventoryFirst: ").Append(buffer.fillCrafterInventoryFirst).AppendLine();
                     sb.Append("refillThreshold: ").Append(buffer.RefillThreshold).AppendLine();
                     sb.Append("haulingBatchSize: ").Append(buffer.haulingBatchSize).AppendLine();
                     sb.Append("ingredients: ").AppendLine();

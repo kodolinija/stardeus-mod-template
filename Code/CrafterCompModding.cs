@@ -37,7 +37,7 @@ namespace IngredientBuffer
 		static FieldInfo showingUnconfiguredIcon = typeof(CrafterComp).GetField("showingUnconfiguredIcon", BindingFlags.NonPublic | BindingFlags.Instance);
 		static FieldInfo demandBlock = typeof(CrafterComp).GetField("demandBlock", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo IngredientsFor = typeof(CrafterComp).GetMethod("IngredientsFor", BindingFlags.NonPublic | BindingFlags.Instance);
-		static MethodInfo CheckMissingIngredients = typeof(CrafterComp).GetMethod("CheckMissingIngredients", BindingFlags.NonPublic | BindingFlags.Instance);
+		//static MethodInfo CheckMissingIngredients = typeof(CrafterComp).GetMethod("CheckMissingIngredients", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo MaybeHintCraftingTargetInventory = typeof(CrafterComp).GetMethod("MaybeHintCraftingTargetInventory", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		static FieldInfo idleGroupId = typeof(CrafterComp).GetField("idleGroupId", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -46,6 +46,9 @@ namespace IngredientBuffer
 		static MethodInfo CancelHaulingAd = typeof(CrafterComp).GetMethod("CancelHaulingAd", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo HideIdleNotification = typeof(CrafterComp).GetMethod("HideIdleNotification", BindingFlags.NonPublic | BindingFlags.Instance);
 		static FieldInfo ingredientBlocks = typeof(CrafterComp).GetField("ingredientBlocks", BindingFlags.NonPublic | BindingFlags.Instance);
+
+		static FieldInfo showingGoalReachedIcon = typeof(CrafterComp).GetField("showingGoalReachedIcon", BindingFlags.NonPublic | BindingFlags.Instance);
+		static MethodInfo CheckOperator = typeof(CrafterComp).GetMethod("CheckOperator", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		public static Mat[] GetIngredients(this CrafterComp This)
         {
@@ -288,7 +291,7 @@ namespace IngredientBuffer
 					IngredientBufferTracker.SwitchToCrafting(This);
 
 					((ExtraInfoComp)extraInfo.GetValue(This))?.ShowInfoIcon(This.Demand.Product.Preview, This.Demand.Product.NameT);
-					CheckMissingIngredients.Invoke(This, new object[] { true });
+					This.CheckMissingIngredients(true);
 					UpdateExtraInfo.Invoke(This,null);
 					MaybeHintCraftingTargetInventory.Invoke(This,null);
 				}
@@ -333,6 +336,61 @@ namespace IngredientBuffer
 			This.CopyConfigTo(target.GetComponent<ICopyableComp>());
 
 			IngredientBufferTracker.RelocateTo(This, target);
+		}
+
+		public static bool CheckMissingIngredients(this CrafterComp This, bool checkIfProducedEnough)
+		{
+			if (checkIfProducedEnough && (This.Demand?.HasProducedEnough(This.S) ?? true))
+			{
+				return false;
+			}
+			if (((Advert)currentAd.GetValue(This))?.IsCancelled ?? false)
+			{
+				currentAd.SetValue(This, null);
+			}
+			//move this check after ingredient check so the crafter can operate while the buffer is being filled
+			/*
+			Advert advert = (Advert)currentAd.GetValue(This);
+			if (advert != null && !advert.IsCompleted)
+			{
+				return false;
+			}*/
+			bool flag = false;
+			Mat[] array = This.GetIngredients();
+			for (int i = 0; i < array.Length; i++)
+			{
+				Mat mat = array[i];
+				if (mat.Diff > 0)
+				{
+					flag = true;
+					break;
+				}
+			}
+			if (!flag)
+			{
+				if ((bool)showingGoalReachedIcon.GetValue(This))
+				{
+					This.HideInfoIcon();
+					showingGoalReachedIcon.SetValue(This,false);
+				}
+				return true;
+			}
+
+			//moved advert check
+			Advert advert = (Advert)currentAd.GetValue(This);
+			if (advert != null && !advert.IsCompleted)
+			{
+				return false;
+			}
+
+			This.RebuildIngredientsReq();
+			CancelHaulingAd.Invoke(This,new object[] { "Has missing ingredients" });
+			CheckOperator.Invoke(This, new object[] { false });
+			currentAd.SetValue(This, This.CreateAdvert("Hauling", "Icons/Color/Store", T.HaulIngredients).WithPromise(NeedIdH.Purpose, 5).MarkAsWork(false)
+				.WithPriority((int)craftPriority.GetValue(This))
+				.AndThen("GatherRawMaterials", T.GatherMaterials, NeedIdH.Purpose, 5)
+				.Publish(true));
+			return false;
 		}
 	}
 }
