@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace IngredientBuffer
 {
-    public class IngredientBufferComp : BaseComponent<IngredientBufferComp>, IUIDataProvider, IUIContextMenuProvider, IUISubmenuProvider, IComponent
+    public class IngredientBufferComp : BaseComponent<IngredientBufferComp>, IUIDataProvider, IUIContextMenuProvider, IUISubmenuProvider, IComponent, IUIMultiSelectable
     {
         private UDB uiBlock = null;
         private UDB isActiveBlock = null;
@@ -22,12 +22,17 @@ namespace IngredientBuffer
         private UDB refillSliderBlock = null;
         private UDB haulingSliderBlock = null;
         private Dictionary<MatType,UDB> ingredientsBlock = new Dictionary<MatType,UDB>();
+        private UDB ejectBlock = null;
 
         public IngredientBuffer buffer;
 
         public bool HasSubmenuNow => true;
 
         public string SubmenuTitle => "ingredientbuffer.ui.title".T();
+
+        public string CommonActionId => CommonActionIngredientBuffer.CommonActionId;
+
+        public bool IsReachableForCommonAction => base.Entity != null && base.Entity.IsActive && this.buffer != null;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Register()
@@ -103,6 +108,7 @@ namespace IngredientBuffer
                     res.Add(udb);
                 res.Add(refillSliderBlock);
                 res.Add(haulingSliderBlock);
+                res.Add(ejectBlock);
             }
             else
             {
@@ -256,6 +262,16 @@ namespace IngredientBuffer
                         });
                 }
                 haulingSliderBlock.UpdateValue(buffer.haulingBatchSize);
+
+                if(ejectBlock == null)
+                {
+                    ejectBlock = UDB.Create(this, UDBT.DBtn, "Icons/Color/Warning", T.Eject)
+                        .WithClickFunction(delegate
+                        {
+                            buffer.TryEjectBuffer(true);
+                            UpdateUIDetails();
+                        });
+                }
             }
             else
             {

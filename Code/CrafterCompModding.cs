@@ -39,15 +39,14 @@ namespace IngredientBuffer
 		static MethodInfo IngredientsFor = typeof(CrafterComp).GetMethod("IngredientsFor", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo CheckMissingIngredients = typeof(CrafterComp).GetMethod("CheckMissingIngredients", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo MaybeHintCraftingTargetInventory = typeof(CrafterComp).GetMethod("MaybeHintCraftingTargetInventory", BindingFlags.NonPublic | BindingFlags.Instance);
-		//nono dont look at this 
-		//static MethodInfo receve = typeof(CrafterComp).GetMethod("Receive", , BindingFlags.NonPublic | BindingFlags.Instance);
+
 		static FieldInfo idleGroupId = typeof(CrafterComp).GetField("idleGroupId", BindingFlags.NonPublic | BindingFlags.Instance);
 		static FieldInfo idleTitle = typeof(CrafterComp).GetField("idleTitle", BindingFlags.NonPublic | BindingFlags.Instance);
 		static FieldInfo colChoice = typeof(CrafterComp).GetField("colChoice", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo CancelHaulingAd = typeof(CrafterComp).GetMethod("CancelHaulingAd", BindingFlags.NonPublic | BindingFlags.Instance);
 		static MethodInfo HideIdleNotification = typeof(CrafterComp).GetMethod("HideIdleNotification", BindingFlags.NonPublic | BindingFlags.Instance);
 		static FieldInfo ingredientBlocks = typeof(CrafterComp).GetField("ingredientBlocks", BindingFlags.NonPublic | BindingFlags.Instance);
-		static FieldInfo eNode = typeof(CrafterComp).GetField("eNode", BindingFlags.NonPublic | BindingFlags.Instance);
+
 		public static Mat[] GetIngredients(this CrafterComp This)
         {
 			return (Mat[])ingredients.GetValue(This);
@@ -295,7 +294,7 @@ namespace IngredientBuffer
 				}
 			}
 		}
-	
+
 		public static void StopProducing(this CrafterComp This)
 		{
 			This.Demand = null;

@@ -90,7 +90,7 @@ namespace IngredientBuffer
             }
         }
 
-        public void TryEjectBuffer()
+        public void TryEjectBuffer(bool keepStack=false)
         {
             if (ingredients != null)
             {
@@ -101,7 +101,19 @@ namespace IngredientBuffer
                         EntityUtils.SpawnRawMaterial(mat, comp.Tile.Transform.WorkSpot, 0.5f, true, true);
                     }
                 }
-                ingredients = null;
+                if (keepStack)
+                {
+                    for(int i = 0; i < ingredients.Length; i++)
+                    {
+                        Mat mat=ingredients[i];
+                        mat.StackSize = 0;
+                        ingredients[i] = mat;
+                    }
+                }
+                else
+                {
+                    ingredients = null;
+                }
             }
         }
 
