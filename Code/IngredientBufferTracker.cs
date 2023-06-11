@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Game;
 using Game.Components;
+using Game.Data;
 using KL.Utils;
 using UnityEngine;
 
@@ -42,6 +43,10 @@ namespace IngredientBuffer
             }
             crafterBuffer[comp].wrapper = bufferComp;
             bufferComp.buffer = crafterBuffer[comp];
+
+            //activate threshold check and publish hauling ad if possible
+            //moved from OnLoad() because Entity.PosProvider may not have been assigned
+            crafterBuffer[comp].RefillThreshold = crafterBuffer[comp].RefillThreshold;
         }
 
         public static void OnSave(CrafterComp comp, ComponentData data)
@@ -58,7 +63,7 @@ namespace IngredientBuffer
             buffer.OnLoad(data);
         }
 
-        public static void RebuildingredientsReq(CrafterComp comp)
+        public static void RebuildIngredientsReq(CrafterComp comp)
         {
             crafterBuffer[comp].RebuildIngredientsReq();
         }
@@ -89,10 +94,37 @@ namespace IngredientBuffer
         }
 
         //cannot detour OnRemove without modifying BaseComponent<T>.OnRemove or other methods
-        //TODO impl with ghost comp
-        public static void OnRemove(CrafterComp comp)
+        //this is the bypass by using IngredientBufferComp.OnRemove()
+        //can indeed handle vanilla situations like destruction or deconstruction
+        //but cannot capture remove event if the CrafterComp is destroyed dynamically
+        public static void Remove(IngredientBuffer buffer)
         {
             D.Err("OnRemove");
+            if (buffer.comp == null)
+            {
+                D.Err("[IngredientBuffer] Trying to remove a buffer without CrafterComp reference!");
+                return;
+            }
+            crafterBuffer.Remove(buffer.comp);
+            buffer.TryEjectBuffer();
+        }
+
+        public static void RelocateTo(CrafterComp comp, Entity target)
+        {
+            D.Err("RelocateTo");
+            if (!crafterBuffer.ContainsKey(comp))
+            {
+                D.Err("[IngredientBuffer] Cannot find buffer on the target of relocation! Is this sandbox mode (InstantBuild)?");
+                return;
+            }
+            IngredientBufferComp from = crafterBuffer[comp].wrapper;
+            IngredientBufferComp to = target.GetComponent<IngredientBufferComp>();
+            if (to == null)
+            {
+                D.Err("[IngredientBuffer] Cannot find an IngredientBufferComp on the target of relocation!");
+                return;
+            }
+            from.CopyConfigTo(to);
         }
     }
 }

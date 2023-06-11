@@ -187,7 +187,8 @@ namespace IngredientBuffer
             haulingBatchSize = data.GetInt("haulingBatchSize", 20);
             IsActive = true;
             //activate threshold check and publish hauling ad if possible
-            RefillThreshold = refillThreshold;
+            //moved to LateReady()
+            //RefillThreshold = refillThreshold;
         }
 
         public void RebuildIngredientsReq(bool skipThresholdCheck=false)
@@ -232,7 +233,7 @@ namespace IngredientBuffer
             }
             comp.MissingMats.AddRange(list);
             //no UI updates during OnLoad()
-            if (wrapper != null)
+            if (wrapper != null && wrapper.GetUIBlock() != null)
             {
                 wrapper.GetUIBlock().NeedsListRebuild = true;
                 wrapper.UpdateUIDetails();
@@ -288,6 +289,52 @@ namespace IngredientBuffer
                 comp.TriggerHaulingAdNow();
             }
             wrapper.UpdateUIDetails();
+        }
+
+        public void CopyTo(IngredientBuffer to)
+        {
+            to.fillCrafterInventoryFirst = fillCrafterInventoryFirst;
+            to.haulingBatchSize = haulingBatchSize;
+            to.isActive = false;
+            to.refillThreshold = refillThreshold;
+            if (!this.isActive || this.ingredients == null)
+            {
+                to.IsActive = false;
+            }
+            else
+            {
+                if (to.ingredients == null)
+                {
+                    to.ingredients = new Mat[this.ingredients.Length];
+                    for (int i = 0; i < this.ingredients.Length; i++)
+                    {
+                        to.ingredients[i] = new Mat
+                        {
+                            Type = this.ingredients[i].Type,
+                            MaxStackSize = this.ingredients[i].MaxStackSize
+                        };
+                    }
+                    to.IsActive = true;
+                    return;
+                }
+                D.Ass(to.ingredients.Length == this.ingredients.Length, "Incorrect ingredient length in CopyTo()");
+
+                for (int i = 0; i < this.ingredients.Length; i++)
+                {
+                    Mat mat = this.ingredients[i];
+                    Mat mat2 = to.ingredients[i];
+                    if (mat.MaxStackSize < mat2.StackSize)
+                    {
+                        Mat drop = mat2.Copy;
+                        drop.StackSize = drop.StackSize - mat.MaxStackSize;
+                        EntityUtils.SpawnRawMaterial(drop, to.comp.Tile.Transform.WorkSpot, 0.5f, true, true);
+                        mat2.StackSize = mat.MaxStackSize;
+                    }
+                    mat2.MaxStackSize = mat.MaxStackSize;
+                    to.ingredients[i] = mat2;
+                }
+                to.IsActive = true;
+            }
         }
     }
 }

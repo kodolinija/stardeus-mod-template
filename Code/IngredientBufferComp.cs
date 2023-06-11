@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace IngredientBuffer
 {
-    public class IngredientBufferComp : BaseComponent<IngredientBufferComp>, IUIDataProvider, IUIContextMenuProvider, IUISubmenuProvider, IComponent, IUIMultiSelectable
+    public class IngredientBufferComp : BaseComponent<IngredientBufferComp>, IUIDataProvider, IUIContextMenuProvider, IUISubmenuProvider, IComponent, IUIMultiSelectable, ICopyableComp
     {
         private UDB uiBlock = null;
         private UDB isActiveBlock = null;
@@ -33,6 +33,10 @@ namespace IngredientBuffer
         public string CommonActionId => CommonActionIngredientBuffer.CommonActionId;
 
         public bool IsReachableForCommonAction => base.Entity != null && base.Entity.IsActive && this.buffer != null;
+
+        public bool IsCopyable => this.buffer != null && this.buffer.comp != null;
+
+        public string CopyConfigText => "ingredientbuffer.ui.copy.config.text".T(base.Tile.Definition.NameT);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Register()
@@ -72,6 +76,30 @@ namespace IngredientBuffer
             D.Warn("[IngredientBuffer] Injected " + inject_count + " defs: \n"+sb.ToString());
         }
 
+        public bool CopyConfigTo(ICopyableComp target)
+        {
+            IngredientBufferComp to = target as IngredientBufferComp;
+            if (to == null || to.buffer == null || to.buffer.comp == null)
+                return false;
+            //let through if to.buffer.comp.Demand==null, for the RelocateTo()
+            if (to.buffer.comp.Demand != null && to.buffer.comp.Demand.craftableId != this.buffer.comp.Demand?.craftableId)
+                return false;
+            this.buffer.CopyTo(to.buffer);
+            to.UpdateUIDetails();
+            return true;
+        }
+
+        public bool CanCopyTo(ICopyableComp comp)
+        {
+            IngredientBufferComp to = comp as IngredientBufferComp;
+            return to != null && to.buffer != null && to.buffer.comp.Demand?.craftableId == this.buffer.comp.Demand?.craftableId;
+        }
+
+        public override void OnRemove()
+        {
+            IngredientBufferTracker.Remove(buffer);
+        }
+
         public void ContextActions(List<UDB> res)
         {
             GetUIDetails(res);
@@ -81,7 +109,7 @@ namespace IngredientBuffer
         {
             if(base.Tile.IsConstructed && base.Tile.ENode.IsReachable)
             {
-                if (buffer.IsActive && buffer.ingredients != null)
+                if (buffer.IsActive && buffer.ingredients != null && buffer.comp.Demand != null)
                 {
                     if (potentialBlock == null)
                     {
@@ -163,6 +191,7 @@ namespace IngredientBuffer
                         fillCrafterBlock.UpdateIcon(buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross");
                     });
             }
+            fillCrafterBlock.UpdateIcon(buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross");
 
             if (haulingSliderBlock == null)
             {
@@ -175,7 +204,7 @@ namespace IngredientBuffer
             }
             haulingSliderBlock.UpdateValue(buffer.haulingBatchSize);
 
-            if (buffer.IsActive && buffer.ingredients != null)
+            if (buffer.IsActive && buffer.ingredients != null && buffer.comp.Demand != null)
             {
                 if (potentialBlock == null)
                 {
@@ -284,6 +313,10 @@ namespace IngredientBuffer
         public void OnRecipeChange()
         {
             ingredientsBlock.Clear();
+            if(potentialBlock != null)
+                potentialBlock.NeedsListRebuild = true;
+            if (uiBlock != null)
+                uiBlock.NeedsListRebuild = true;
         }
 
         [Obsolete]

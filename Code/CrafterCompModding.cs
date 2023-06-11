@@ -146,7 +146,7 @@ namespace IngredientBuffer
 				}
 			}
 
-			IngredientBufferTracker.RebuildingredientsReq(This);
+			IngredientBufferTracker.RebuildIngredientsReq(This);
 
 			return This.MissingMats.Count == 0;
 		}
@@ -326,6 +326,13 @@ namespace IngredientBuffer
 			}
 
 			IngredientBufferTracker.StopProducing(This);
+		}
+
+		public static void RelocateTo(this CrafterComp This, Entity target)
+		{
+			This.CopyConfigTo(target.GetComponent<ICopyableComp>());
+
+			IngredientBufferTracker.RelocateTo(This, target);
 		}
 	}
 }
