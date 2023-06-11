@@ -99,18 +99,18 @@ namespace IngredientBuffer
         {
             UpdateUIDetails();
 
-            res.Add(isActiveBlock);
             res.Add(fillCrafterBlock);
+            res.Add(haulingSliderBlock);
+            res.Add(isActiveBlock);
             if (buffer.IsActive && buffer.ingredients != null)
             {
                 res.Add(potentialBlock);
-                foreach(UDB udb in ingredientsBlock.Values)
-                    res.Add(udb);
                 res.Add(refillSliderBlock);
-                res.Add(haulingSliderBlock);
+                foreach (UDB udb in ingredientsBlock.Values)
+                    res.Add(udb);
                 res.Add(ejectBlock);
             }
-            else
+            else if(buffer.IsActive && buffer.ingredients == null)
             {
                 res.Add(uiBlock);
             }
@@ -143,16 +143,16 @@ namespace IngredientBuffer
 
             if (isActiveBlock == null)
             {
-                isActiveBlock = UDB.Create(this, UDBT.DTextBtn, buffer.IsActive ? "Icons/Color/Check" : "Icons/Color/Cross", "isActive");
-                isActiveBlock.WithText2(T.Toggle)
+                isActiveBlock = UDB.Create(this, UDBT.DBtn, "Icons/Color/Warning", buffer.IsActive ? "ingredientbuffer.ui.disable.buffer".T() : "ingredientbuffer.ui.enable.buffer".T())
                     .WithClickFunction(delegate
                     {
                         GetUIBlock().NeedsListRebuild = true;
                         buffer.IsActive = !buffer.IsActive;
-                        isActiveBlock.UpdateIcon(buffer.IsActive ? "Icons/Color/Check" : "Icons/Color/Cross");
                         isActiveBlock.NeedsListRebuild = true;
                     });
             }
+            isActiveBlock.UpdateTitle(buffer.IsActive ? "ingredientbuffer.ui.disable.buffer".T() : "ingredientbuffer.ui.enable.buffer".T());
+
             if (fillCrafterBlock == null)
             {
                 fillCrafterBlock = UDB.Create(this, UDBT.DTextBtn, buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross", "fillCrafterInventoryFirst");
@@ -163,6 +163,18 @@ namespace IngredientBuffer
                         fillCrafterBlock.UpdateIcon(buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross");
                     });
             }
+
+            if (haulingSliderBlock == null)
+            {
+                haulingSliderBlock = UDB.Create(this, UDBT.DSlider, "Icons/Color/FillLimit", "haulingBatchSize")
+                    .WithRange(1f, 100f)
+                    .WithValueChangeFunction(delegate (UDB b, object v)
+                    {
+                        buffer.haulingBatchSize = Mathf.RoundToInt((float)v);
+                    });
+            }
+            haulingSliderBlock.UpdateValue(buffer.haulingBatchSize);
+
             if (buffer.IsActive && buffer.ingredients != null)
             {
                 if (potentialBlock == null)
@@ -252,16 +264,6 @@ namespace IngredientBuffer
                     buffer.RefillThreshold = cap;
                 refillSliderBlock.UpdateRange(1f, Mathf.Max(product.MaxStackSize, 1));
                 refillSliderBlock.UpdateValue(buffer.RefillThreshold);
-                if (haulingSliderBlock == null)
-                {
-                    haulingSliderBlock= UDB.Create(this, UDBT.DSlider, "Icons/Color/FillLimit", "haulingBatchSize")
-                        .WithRange(1f, 100f)
-                        .WithValueChangeFunction(delegate (UDB b, object v)
-                        {
-                            buffer.haulingBatchSize = Mathf.RoundToInt((float)v);
-                        });
-                }
-                haulingSliderBlock.UpdateValue(buffer.haulingBatchSize);
 
                 if(ejectBlock == null)
                 {
