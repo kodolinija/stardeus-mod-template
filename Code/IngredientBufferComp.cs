@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Game;
 using Game.Components;
@@ -25,6 +25,22 @@ namespace IngredientBuffer
         private UDB ejectBlock = null;
 
         public IngredientBuffer buffer;
+
+        private static string _priorityTooltip = null;
+        private static string PriorityTooltip
+        {
+            get
+            {
+                if (_priorityTooltip == null)
+                {
+                    string text;
+                    string o = The.Bindings.GetBinding(ActionType.ShiftModifier).AllControlGlyphs(out text, "<br>", false);
+                    string o2 = The.Bindings.GetBinding(ActionType.CtrlModifier).AllControlGlyphs(out text, "<br>", false);
+                    _priorityTooltip = "priority.block.shift.tip".T(o, o2);
+                }
+                return _priorityTooltip;
+            }
+        }
 
         public bool HasSubmenuNow => true;
 
@@ -167,8 +183,6 @@ namespace IngredientBuffer
 
         public void UpdateUIDetails()
         {
-            //TODO tooltips, icon click function
-
             if (isActiveBlock == null)
             {
                 isActiveBlock = UDB.Create(this, UDBT.DBtn, "Icons/Color/Warning", buffer.IsActive ? "ingredientbuffer.ui.disable.buffer".T() : "ingredientbuffer.ui.enable.buffer".T())
@@ -183,8 +197,9 @@ namespace IngredientBuffer
 
             if (fillCrafterBlock == null)
             {
-                fillCrafterBlock = UDB.Create(this, UDBT.DTextBtn, buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross", "fillCrafterInventoryFirst");
+                fillCrafterBlock = UDB.Create(this, UDBT.DTextBtn, buffer.fillCrafterInventoryFirst ? "Icons/Color/Check" : "Icons/Color/Cross", "ingredientbuffer.ui.fillcrafterinventoryfirst".T());
                 fillCrafterBlock.WithText2(T.Toggle)
+                    .WithTooltip("ingredientbuffer.tooltip.fillcrafterinventoryfirst".T())
                     .WithClickFunction(delegate
                     {
                         buffer.fillCrafterInventoryFirst = !buffer.fillCrafterInventoryFirst;
@@ -195,8 +210,9 @@ namespace IngredientBuffer
 
             if (haulingSliderBlock == null)
             {
-                haulingSliderBlock = UDB.Create(this, UDBT.DSlider, "Icons/Color/FillLimit", "haulingBatchSize")
+                haulingSliderBlock = UDB.Create(this, UDBT.DSlider, "Icons/Color/FillLimit", "ingredientbuffer.ui.haulingbatchsize".T())
                     .WithRange(1f, 100f)
+                    .WithTooltip("ingredientbuffer.tooltip.haulingbatchsize".T())
                     .WithValueChangeFunction(delegate (UDB b, object v)
                     {
                         buffer.haulingBatchSize = Mathf.RoundToInt((float)v);
@@ -208,7 +224,18 @@ namespace IngredientBuffer
             {
                 if (potentialBlock == null)
                 {
-                    potentialBlock = UDB.Create(this, UDBT.IProgress, null, null);
+                    potentialBlock = UDB.Create(this, UDBT.IProgress, null, null)
+                        .WithTooltipFunction(delegate (UDB b)
+                        {
+                            Def def = buffer?.comp?.Demand?.Product;
+                            if (def == null)
+                                return "";
+                            Caches.StringBuilder.Clear();
+                            Caches.StringBuilder.Append("available.count".T(base.S.Sys.Inventory.CountOf(def)));
+                            Caches.StringBuilder.Append("<br>");
+                            Caches.StringBuilder.Append("ingredientbuffer.tooltip.buffered.count".T((int)b.Value, (int)b.MaxValue));
+                            return Caches.StringBuilder.ToString();
+                        });
                 }
                 //do not use MatType because output might be beings
                 potentialBlock.UpdateIcon(buffer.comp.Demand.Product.Preview);
@@ -221,24 +248,22 @@ namespace IngredientBuffer
                 for (int i = 0; i < buffer.ingredients.Length; i++)
                 {
                     Mat mat = buffer.ingredients[i];
-                    
-                    string tooltip = null;
-
                     UDB udb;
                     if(!ingredientsBlock.TryGetValue(mat.Type, out udb))
                     {
-                        if(tooltip == null)
-                        {
-                            string text;
-                            string o = The.Bindings.GetBinding(ActionType.ShiftModifier).AllControlGlyphs(out text, "<br>", false);
-                            string o2 = The.Bindings.GetBinding(ActionType.CtrlModifier).AllControlGlyphs(out text, "<br>", false);
-                            tooltip = "priority.block.shift.tip".T(o, o2);
-                        }
                         int index = i;
 
                         udb = UDB.Create(this, UDBT.IPriority, mat.Type.IconId, mat.Type.NameT)
-                        .WithTooltip(tooltip)
+                        .WithTooltipFunction(delegate(UDB b)
+                        {
+                            Caches.StringBuilder.Clear();
+                            Caches.StringBuilder.Append("available.count".T(base.S.Sys.Inventory.CountOf(mat.Type.Def)));
+                            Caches.StringBuilder.Append("<br>");
+                            Caches.StringBuilder.Append(PriorityTooltip);
+                            return Caches.StringBuilder.ToString();
+                        })
                         .WithIconTint(mat.Type.IconTint)
+                        .WithIconClickFunction(()=>ShowAmountInputContext(index))
                         .WithClickFunction(delegate
                         {
                             int delta = -1;
@@ -282,7 +307,8 @@ namespace IngredientBuffer
 
                 if (refillSliderBlock == null)
                 {
-                    refillSliderBlock = UDB.Create(this, UDBT.DSlider, "Icons/Color/FillLimit", "refillThreshold")
+                    refillSliderBlock = UDB.Create(this, UDBT.DSlider, "Icons/Color/FillLimit", "ingredientbuffer.ui.refillthreshold".T())
+                        .WithTooltip("ingredientbuffer.tooltip.refillthreshold".T())
                         .WithValueChangeFunction(delegate (UDB b, object v)
                         {
                             buffer.RefillThreshold = Mathf.RoundToInt((float)v);
@@ -296,7 +322,7 @@ namespace IngredientBuffer
 
                 if(ejectBlock == null)
                 {
-                    ejectBlock = UDB.Create(this, UDBT.DBtn, "Icons/Color/Warning", T.Eject)
+                    ejectBlock = UDB.Create(this, UDBT.DBtn, "Icons/Color/Warning", "ingredientbuffer.ui.eject.all".T())
                         .WithClickFunction(delegate
                         {
                             buffer.TryEjectBuffer(true);
@@ -310,6 +336,65 @@ namespace IngredientBuffer
             }
         }
 
+        private void ShowAmountInputContext(int index)
+        {
+            if (buffer?.comp?.Demand == null || buffer?.ingredients == null)
+            {
+                UISounds.PlayActionDenied();
+            }
+            else
+            {
+                UIAmountInputContext amountContext = new UIAmountInputContext(base.S)
+                    .WithConfirmAction(delegate
+                    {
+                        base.S.Sig.HideContextMenu.Send();
+                    }).WithCurrentAmountChangeFun(delegate (int amt)
+                    {
+                        if (buffer?.comp?.Demand != null && buffer?.ingredients != null)
+                        {
+                            if (amt > 100000)
+                            {
+                                amt = 100000;
+                            }
+                            if (index >= buffer.ingredients.Length || index >= buffer.comp.Demand.Craftable.Ingredients.Length)
+                                return;
+                            if (buffer.ingredients[index].Type != buffer.comp.Demand.Craftable.Ingredients[index].Type)
+                                return;
+                            int delta = amt - buffer.ingredients[index].MaxStackSize / buffer.comp.Demand.Craftable.Ingredients[index].StackSize;
+                            if (buffer.TryAdjustMaxStackSize(index, delta))
+                                UpdateUIDetails();
+                        }
+                    }).WithCurrentAmountTextFunc(delegate
+                    {
+                        if (buffer?.comp?.Demand != null && buffer?.ingredients != null)
+                        {
+                            if (index >= buffer.ingredients.Length || index >= buffer.comp.Demand.Craftable.Ingredients.Length)
+                                return Units.XNum(1);
+                            if (buffer.ingredients[index].Type != buffer.comp.Demand.Craftable.Ingredients[index].Type)
+                                return Units.XNum(1);
+                            return Units.XNum(buffer.ingredients[index].MaxStackSize / buffer.comp.Demand.Craftable.Ingredients[index].StackSize);
+                        }
+                        return Units.XNum(1);
+                    }).WithCurrentAmountValueFunc(delegate
+                    {
+                        if (buffer?.comp?.Demand != null && buffer?.ingredients != null)
+                        {
+                            if (index >= buffer.ingredients.Length || index >= buffer.comp.Demand.Craftable.Ingredients.Length)
+                                return 1;
+                            if (buffer.ingredients[index].Type != buffer.comp.Demand.Craftable.Ingredients[index].Type)
+                                return 1;
+                            return buffer.ingredients[index].MaxStackSize / buffer.comp.Demand.Craftable.Ingredients[index].StackSize;
+                        }
+                        return 1;
+                    })
+                    .WithSliderText(T.WantedAmount)
+                    .WithSliderRange(1, 100)
+                    .WithHeaderText(buffer.ingredients[index].Type.NameT)
+                    .WithSliderIcon(buffer.ingredients[index].Type.Def.Preview);
+                base.S.Sig.ShowContextMenu.Send(amountContext);
+            }
+        }
+
         public void OnRecipeChange()
         {
             ingredientsBlock.Clear();
@@ -319,7 +404,7 @@ namespace IngredientBuffer
                 uiBlock.NeedsListRebuild = true;
         }
 
-        [Obsolete]
+        [Conditional("DEBUG")]
         private void addTestUI(List<UDB> res)
         {
             res.Add(UDB.Create(this, Game.Constants.UDBT.DTextBtn, "Icons/Color/Count", "buffer")

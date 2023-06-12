@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Game;
 using Game.Components;
 using Game.Data;
@@ -19,20 +20,21 @@ namespace IngredientBuffer
 
         public static void OnGameIdChanged(int id)
         {
-            D.Err("OnGameIdChanged");
+            Info("OnGameIdChanged");
+
             crafterBuffer.Clear();
         }
 
         public static void OnLateReady(CrafterComp comp)
         {
-            D.Err("OnLateReady");
+            Info("OnLateReady");
             
             if (!crafterBuffer.ContainsKey(comp))
             {
                 //newly built assembler compatibility
-                IngredientBuffer buffer = new IngredientBuffer(comp);
-                buffer.IsActive = true;
-                crafterBuffer.Add(comp, buffer);
+                IngredientBuffer buf = new IngredientBuffer(comp);
+                buf.IsActive = true;
+                crafterBuffer.Add(comp, buf);
             }
             IngredientBufferComp bufferComp = comp.Entity.GetComponent<IngredientBufferComp>();
             if (bufferComp == null)
@@ -41,23 +43,26 @@ namespace IngredientBuffer
                 bufferComp = new IngredientBufferComp();
                 comp.Entity.AddComponent(bufferComp);
             }
-            crafterBuffer[comp].wrapper = bufferComp;
-            bufferComp.buffer = crafterBuffer[comp];
+            IngredientBuffer buffer = crafterBuffer[comp];
+            buffer.wrapper = bufferComp;
+            bufferComp.buffer = buffer;
 
             //activate threshold check and publish hauling ad if possible
             //moved from OnLoad() because Entity.PosProvider may not have been assigned
-            crafterBuffer[comp].RefillThreshold = crafterBuffer[comp].RefillThreshold;
+            buffer.RefillThreshold = buffer.RefillThreshold;
         }
 
         public static void OnSave(CrafterComp comp, ComponentData data)
         {
-            D.Err("OnSave");
+            Info("OnSave");
+
             crafterBuffer[comp].OnSave(data);
         }
 
         public static void OnLoad(CrafterComp comp, ComponentData data)
         {
-            D.Err("OnLoad");
+            Info("OnLoad");
+
             IngredientBuffer buffer = new IngredientBuffer(comp);
             crafterBuffer.Add(comp, buffer);
             buffer.OnLoad(data);
@@ -65,21 +70,41 @@ namespace IngredientBuffer
 
         public static void RebuildIngredientsReq(CrafterComp comp)
         {
+            if (!crafterBuffer.ContainsKey(comp))
+            {
+                Info("RebuildIngredientsReq: CrafterComp not in tracker! " + comp + "@" + comp.Entity.Position);
+                return;
+            }
             crafterBuffer[comp].RebuildIngredientsReq();
         }
 
         public static void ProvideRequestedMat(CrafterComp comp, UnstoredMatComp unstoredMat)
         {
+            if (!crafterBuffer.ContainsKey(comp))
+            {
+                Info("ProvideRequestedMat: CrafterComp not in tracker! " + comp + "@" + comp.Entity.Position);
+                return;
+            }
             crafterBuffer[comp].ProvideRequestedMat(unstoredMat);
         }
 
         public static void FillFromBuffer(CrafterComp comp)
         {
+            if (!crafterBuffer.ContainsKey(comp))
+            {
+                Info("FillFromBuffer: CrafterComp not in tracker! " + comp + "@" + comp.Entity.Position);
+                return;
+            }
             crafterBuffer[comp].FillFromBuffer();
         }
 
         public static void SwitchToCrafting(CrafterComp comp)
         {
+            if (!crafterBuffer.ContainsKey(comp))
+            {
+                Info("SwitchToCrafting: CrafterComp not in tracker! " + comp + "@" + comp.Entity.Position);
+                return;
+            }
             IngredientBuffer buffer=crafterBuffer[comp];
             //it's not redundant!
             buffer.IsActive = buffer.IsActive;
@@ -88,9 +113,15 @@ namespace IngredientBuffer
 
         public static void StopProducing(CrafterComp comp)
         {
-            crafterBuffer[comp].wrapper.GetUIBlock().NeedsListRebuild = true;
-            crafterBuffer[comp].TryEjectBuffer();
-            crafterBuffer[comp].RefillThreshold = 1;
+            if (!crafterBuffer.ContainsKey(comp))
+            {
+                Info("StopProducing: CrafterComp not in tracker! " + comp + "@" + comp.Entity.Position);
+                return;
+            }
+            IngredientBuffer buffer = crafterBuffer[comp];
+            buffer.wrapper.GetUIBlock().NeedsListRebuild = true;
+            buffer.TryEjectBuffer();
+            buffer.RefillThreshold = 1;
         }
 
         //cannot detour OnRemove without modifying BaseComponent<T>.OnRemove or other methods
@@ -99,7 +130,8 @@ namespace IngredientBuffer
         //but cannot capture remove event if the CrafterComp is destroyed dynamically
         public static void Remove(IngredientBuffer buffer)
         {
-            D.Err("OnRemove");
+            Info("OnRemove");
+
             if (buffer.comp == null)
             {
                 D.Err("[IngredientBuffer] Trying to remove a buffer without CrafterComp reference!");
@@ -111,7 +143,8 @@ namespace IngredientBuffer
 
         public static void RelocateTo(CrafterComp comp, Entity target)
         {
-            D.Err("RelocateTo");
+            Info("RelocateTo");
+
             if (!crafterBuffer.ContainsKey(comp))
             {
                 D.Err("[IngredientBuffer] Cannot find buffer on the target of relocation! Is this sandbox mode (InstantBuild)?");
@@ -125,6 +158,12 @@ namespace IngredientBuffer
                 return;
             }
             from.CopyConfigTo(to);
+        }
+
+        [Conditional("DEBUG")]
+        public static void Info(string s)
+        {
+            D.Err(s);
         }
     }
 }

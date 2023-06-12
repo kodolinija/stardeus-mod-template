@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Game.Components;
 using Game.Components.CommonActions;
 using Game.Constants;
@@ -13,7 +9,7 @@ using UnityEngine;
 
 namespace IngredientBuffer
 {
-    internal class CommonActionIngredientBuffer : CommonAction
+    public class CommonActionIngredientBuffer : CommonAction
     {
         public const string CommonActionId = "ingredientbuffer.common.action";
 
@@ -103,7 +99,7 @@ namespace IngredientBuffer
 
             if (buffersBlock == null)
             {
-                buffersBlock = UDB.Create("common_action", UDBT.ITextBtn, "Icons/Color/Warning", "ingredientbuffer.common.action.eject.all")
+                buffersBlock = UDB.Create("common_action", UDBT.ITextBtn, "Icons/Color/Warning", "ingredientbuffer.ui.eject.all".T())
                     .WithText2(T.Eject)
                     .WithClickFunction(delegate
                     {

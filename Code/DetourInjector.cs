@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Collections;
@@ -15,6 +16,7 @@ namespace IngredientBuffer
     {
         private static string AssemblyName => Assembly.GetAssembly(typeof(DetourInjector)).FullName.Split(new char[] { ',' }).First<string>();
 
+        [Conditional("DEBUG")]
         public static void Info(string text)
         {
             GetCoroutines().StartCoroutine(DelayedPopup("Icons/Color/Info", Game.Constants.T.Information, text));
