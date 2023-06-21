@@ -26,13 +26,15 @@ namespace IngredientBuffer
 
         public override string Id => CommonActionId;
 
+        public override string GroupName => "ingredientbuffer.ui.title".T();
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Register()
         {
             CommonAction.Add(new CommonActionIngredientBuffer());
         }
 
-        public override void OnAppendUIBlocks(GameState s, UIDataBlockListView view, List<IComponent> common)
+        public override void OnAppendUIBlocks(GameState s, List<UDB> view, List<IComponent> common)
         {
             this.ResetState();
             foreach(IComponent c in common)
@@ -69,7 +71,7 @@ namespace IngredientBuffer
             if(activeBuffers.Count > 0)
             {
                 activeBuffersBlock.UpdateText(Units.XNum(activeBuffers.Count));
-                view.AddBlock(activeBuffersBlock);
+                view.Add(activeBuffersBlock);
             }
 
             if (inactiveBuffersBlock == null)
@@ -94,7 +96,7 @@ namespace IngredientBuffer
             if(inactiveBuffers.Count > 0)
             {
                 inactiveBuffersBlock.UpdateText(Units.XNum(inactiveBuffers.Count));
-                view.AddBlock(inactiveBuffersBlock);
+                view.Add(inactiveBuffersBlock);
             }
 
             if (buffersBlock == null)
@@ -117,7 +119,7 @@ namespace IngredientBuffer
             if (buffers.Count > 0)
             {
                 buffersBlock.UpdateText(Units.XNum(buffers.Count));
-                view.AddBlock(buffersBlock);
+                view.Add(buffersBlock);
             }
         }
 

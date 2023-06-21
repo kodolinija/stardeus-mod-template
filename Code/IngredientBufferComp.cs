@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace IngredientBuffer
 {
-    public class IngredientBufferComp : BaseComponent<IngredientBufferComp>, IUIDataProvider, IUIContextMenuProvider, IUISubmenuProvider, IComponent, IUIMultiSelectable, ICopyableComp
+    public class IngredientBufferComp : BaseComponent<IngredientBufferComp>, IUIDataProvider, IUIContextMenuProvider, IUISubmenuProvider, IComponent, IUIMultiSelectable, ICopyableComp, IUINoAutoPair
     {
         private UDB uiBlock = null;
         private UDB isActiveBlock = null;
@@ -167,7 +167,7 @@ namespace IngredientBuffer
         {
             if(uiBlock == null)
             {
-                uiBlock = UDB.Create(this, UDBT.IText, "Icons/Color/Warning", null);
+                uiBlock = UDB.Create(this, UDBT.IText, "Icons/Color/Warning", null).WithGroupId(UDBGH.Management);
             }
             if (!buffer.IsActive)
             {
@@ -224,7 +224,7 @@ namespace IngredientBuffer
             {
                 if (potentialBlock == null)
                 {
-                    potentialBlock = UDB.Create(this, UDBT.IProgress, null, null)
+                    potentialBlock = UDB.Create(this, UDBT.IProgress, null, null).WithGroupId(UDBGH.Management)
                         .WithTooltipFunction(delegate (UDB b)
                         {
                             Def def = buffer?.comp?.Demand?.Product;
