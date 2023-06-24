@@ -45,6 +45,7 @@ namespace IngredientBuffer
         [RuntimeInitializeOnLoadMethod]
         private static void init()
         {
+            D.Warn("check");
             Inject();
         }
 

@@ -10,6 +10,7 @@ using Game.UI;
 using KL.Randomness;
 using KL.Utils;
 using UnityEngine;
+using Game.ModCore;
 
 namespace IngredientBuffer
 {
@@ -63,6 +64,7 @@ namespace IngredientBuffer
 			Advert ad=(Advert)currentAd.GetValue(This);
 			return ad != null && !ad.IsCancelled && !ad.IsCompleted;
         }
+
 		public static void TriggerHaulingAdNow(this CrafterComp This)
         {
 			if (This.MissingMats.Count == 0 || This.HasCurrentAd())
@@ -74,7 +76,7 @@ namespace IngredientBuffer
 							.Publish(true);
 			currentAd.SetValue(This, ad);
 		}
-
+		[injectAttribute]
 		public static void OnLateReady(this CrafterComp This, bool wasLoaded)
 		{
 			extraInfo.SetValue(This,This.Entity.GetRequiredComponent<ExtraInfoComp>(This));
