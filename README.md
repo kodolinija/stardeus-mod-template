@@ -42,7 +42,7 @@ https://stardeusgame.com/eula/ - you must agree to these terms if are publishing
 
 When your mod is ready, you can share it with the world by uploading it to the Steam Workshop.
 
-1. Edit the `ModTemplate.json` and change the `SteamWorkshop` from `false` to `true`.
+1. Edit the `ModInfo.json` and change the `SteamWorkshop` from `false` to `true`.
 2. Make sure you have changed the `ModCover.jpg` and removed any unnecessary files that were in the template.
 3. Restart Stardeus and open `Main Menu > Mods > Your Mod`.
 4. Click the `Upload to Steam Workshop` button.
