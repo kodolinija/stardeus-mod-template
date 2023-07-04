@@ -1,9 +1,9 @@
 {
-    "Id" : "Template",
-    "SteamWorkshop" : false,
-    "Name" : "Stardeus Mod Template",
-    "Description" : "Example Stardeus mod template with VS Code. Contains official examples of how to mod certain aspects of the game. See more details at the GitHub repo: https://github.com/kodolinija/stardeus-mod-template",
+    "Id" : "Buffer_crafter",
+    "SteamWorkshop" : true,
+    "Name" : "Crafters Buffer",
+    "Description" : "this mod allows to store items into the crafters not just moving items one by one in between crafts",
     "ModVersion" : "1.0.0",
-    "GameVersion" : "0.6.164",
-    "Dependencies" : [ "Core" ]
+    "GameVersion" : "0.9.0",
+    "Dependencies" : [ "Core", "Detourlib" ]
 }
