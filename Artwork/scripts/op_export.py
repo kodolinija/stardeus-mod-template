@@ -4,13 +4,14 @@ from mathutils import Vector
 from math import radians
 import os
 from time import sleep
-from threading import Timer 
+from threading import Timer
 import copy
 
 TILE_RES = 256
 
 def output_path(path):
-    artwork_dir = os.path.dirname(bpy.data.filepath)
+    blender_dir = os.path.dirname(bpy.data.filepath)
+    artwork_dir = os.path.dirname(blender_dir)
     mod_dir = os.path.dirname(artwork_dir)
     graphics_dir = os.path.join(mod_dir, "Graphics/")
     if path.endswith("_"):
@@ -61,7 +62,7 @@ class StardeusActivateActiveOperator(bpy.types.Operator):
         else:
             self.report({'ERROR'}, "Not found in SPRITES: " + col_name)
         return {'FINISHED'}
-        
+
 class StardeusExportSelectedOperator(bpy.types.Operator):
     bl_idname = "object.stardeusexportselected"
     bl_label = "Export Selected"
@@ -98,7 +99,7 @@ def activate_model(operator, sprite, select_contents=True):
     collection = sprite.path
     for obj in bpy.context.selected_objects:
         obj.select_set(False)
-    
+
     names = collection.split("/")
     final_name = names[-1]
     names.append(sprite.lights)
@@ -118,7 +119,7 @@ def activate_model(operator, sprite, select_contents=True):
             sel_children = col.name == final_name and sprite.subset == []
         else:
             sel_children = False
-        toggle_collection(col, col.name in names, sel_children)    
+        toggle_collection(col, col.name in names, sel_children)
 
     activate_camera(sprite, 'd')
 
@@ -137,7 +138,7 @@ def activate_camera(sprite, direction):
             # Exactly same camera that we used for DU (battery case)
             camera_name = sprite.camera_du
             cam = f'Camera{camera_name}{height}x{width}'
-        else: 
+        else:
             camera_name = sprite.camera_lr
             cam = f'Camera{camera_name}{width}x{height}'
 
@@ -175,19 +176,23 @@ def export_model(operator, sprite):
     scene.tool_settings.transform_pivot_point = "CURSOR"
 
     # Down
-    activate_camera(sprite, 'd')
-    render_scene(operator, path + "_D.png")
-    rotate_selected(90)
-    activate_camera(sprite, 'l')
-    render_scene(operator, path + "_L.png")
-    rotate_selected(90)
-    activate_camera(sprite, 'u')
-    render_scene(operator, path + "_U.png")
-    rotate_selected(90)
-    activate_camera(sprite, 'r')
-    render_scene(operator, path + "_R.png")
-    # Rotate back 
-    rotate_selected(-270)
+    if 'D' not in sprite.skip_rotations:
+        activate_camera(sprite, 'd')
+        render_scene(operator, path + "_D.png")
+    rotate_selected(-90)
+    if 'L' not in sprite.skip_rotations:
+        activate_camera(sprite, 'l')
+        render_scene(operator, path + "_L.png")
+    rotate_selected(-90)
+    if 'U' not in sprite.skip_rotations:
+        activate_camera(sprite, 'u')
+        render_scene(operator, path + "_U.png")
+    rotate_selected(-90)
+    if 'R' not in sprite.skip_rotations:
+        activate_camera(sprite, 'r')
+        render_scene(operator, path + "_R.png")
+    # Rotate back
+    rotate_selected(270)
 
     activate_camera(sprite, 'd')
     report(operator, "Done rendering " + path)
@@ -195,11 +200,11 @@ def export_model(operator, sprite):
     scene.tool_settings.transform_pivot_point = prev_pivot
 
 def get_override(area_type, region_type):
-    for area in bpy.context.screen.areas: 
-        if area.type == area_type:             
-            for region in area.regions:                 
-                if region.type == region_type:                    
-                    override = {'area': area, 'region': region} 
+    for area in bpy.context.screen.areas:
+        if area.type == area_type:
+            for region in area.regions:
+                if region.type == region_type:
+                    override = {'area': area, 'region': region}
                     return override
     #error message if the area or region wasn't found
     raise RuntimeError("Wasn't able to find", region_type," in area ", area_type,
@@ -209,10 +214,10 @@ def get_override(area_type, region_type):
 def rotate_selected(deg, axis='Z', constraint=(False, False, True)):
     rads = radians(deg)
     override = get_override("VIEW_3D", "WINDOW")
-    bpy.ops.transform.rotate(override, value=rads, orient_axis=axis, orient_type='GLOBAL', 
-        orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), 
-        orient_matrix_type='GLOBAL', 
-        constraint_axis=constraint, 
+    bpy.ops.transform.rotate(override, value=rads, orient_axis=axis, orient_type='GLOBAL',
+        orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+        orient_matrix_type='GLOBAL',
+        constraint_axis=constraint,
         mirror=True)
 
 def render_scene(operator, path):
