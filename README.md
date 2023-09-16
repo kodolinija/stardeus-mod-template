@@ -9,6 +9,20 @@ See subfolders for more readme files on how to create Artwork, and Definitions.
 
 Best place to ask questions about modding Stardeus is on [Stardeus Discord](https://discord.com/invite/89amEwP), #stardeus-modding channel.
 
+## GitHub Repository
+
+IMPORTANT! If you downloaded this mod from [Stardeus Steam Workshop](https://steamcommunity.com/app/1380910/workshop/),
+please check the official GitHub Repository instead. It will most likely have a newer, more up to date version of the mod template.
+
+The repository is here: https://github.com/kodolinija/stardeus-mod-template
+
+## Stardeus Modding Series on YouTube
+
+Here's a playlist of the official Stardeus Modding series on YouTube:
+https://www.youtube.com/playlist?list=PLvm1mLYInibc8n0Q5_caRql5nEUiBwvTC
+
+Subscribe to https://www.youtube.com/@KodoLinija and use the bell icon to get notified about new videos.
+
 
 ## How to compile a mod DLL with your code
 
@@ -23,17 +37,10 @@ If you're on Linux, please refer to [Linux Build Instruction instead.](Linux.md)
 7. Move the folder to the `Mods` directory near your `Saves`. You can open the folder from Stardeus itself, through `Main Menu > Mods > About Mods > Open User Mods Directory`.
 8. Open the folder with `Visual Studio Code`.
 9. Press `F5` to compile the DLL file and run Stardeus.
-10. Note that Steam will automatically restart Stardeus executable to run it through appropriate Steam facilities, so if you will want to debug the project, you will have to attach the debugger after the executable is restarted (it will have a different PID, etc).
-11. Once Stardeus starts, you should see your mod listed and enabled in `Main Menu > Mods`.
+10. Once Stardeus starts, you should see your mod listed and enabled in `Main Menu > Mods`.
 
 You may need to examine what's in .vscode directory and modify / create new
 scripts there accordingly to what would work on your OS.
-
-Video tutorial: https://www.youtube.com/watch?v=oUttUN2Khp8
-
-More tutorials will follow!
-
-Happy modding!
 
 ## How to upload your mod to Steam Workshop
 
@@ -42,8 +49,22 @@ https://stardeusgame.com/eula/ - you must agree to these terms if are publishing
 
 When your mod is ready, you can share it with the world by uploading it to the Steam Workshop.
 
+### Initial Upload
+
+0. Make sure you have removed any unnecessary files and folders from the mod, including, .vscode, .git, Artwork, Blender files, any unused files from the mod template, etc
+1. Remove the `SteamWorkshopItemId` file.
 1. Edit the `ModInfo.json` and change the `SteamWorkshop` from `false` to `true`.
 2. Make sure you have changed the `ModCover.jpg` and removed any unnecessary files that were in the template.
-3. Restart Stardeus and open `Main Menu > Mods > Your Mod`.
-4. Click the `Upload to Steam Workshop` button.
-5. A browser page should open, where you can finish adding descriptions, etc.
+3. Run Stardeus through Steam and open `Main Menu > Mods > Your Mod`.
+4. Press the `Upload to Steam Workshop` button.
+5. A confirmation popup will appear shortly.
+
+### Updating Your Mod
+
+0. Do not delete or change the `SteamWorkshopItemId` file, it has your mod steam id
+1. Make changes to the mod, rebuild the DLL if necessary
+2. Run Stardeus through Steam
+3. Go to `Main Menu > Mods > Your Mod` and press the `Upload to Steam Workshop` button
+4. A confirmation popup will appear shortly.
+
+You can only update the mod if your Steam user is the creator and if the mod is inside the User mods folder, not downloaded through Steam Workshop.

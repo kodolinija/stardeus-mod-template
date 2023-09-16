@@ -1,26 +1,3 @@
-## GitHub Repository
-
-IMPORTANT! If you downloaded this mod from [Stardeus Steam Workshop](https://steamcommunity.com/app/1380910/workshop/),
-please check the official GitHub Repository instead. It will most likely have a newer, more up to date version of the mod template.
-
-The repository is here: https://github.com/kodolinija/stardeus-mod-template
-
-## Stardeus Modding Series on YouTube
-
-Here's a playlist of the official Stardeus Modding series on YouTube:
-https://www.youtube.com/playlist?list=PLvm1mLYInibc8n0Q5_caRql5nEUiBwvTC
-
-Subscribe to https://www.youtube.com/@KodoLinija and use the bell icon to get notified about new videos.
-
-## Developing a mod in Visual Studio Code
-
-1. Run Stardeus, go to Main Menu > Mods > About Mods and press "Open User Mod Directory". This should open a folder where your mod should be placed.
-2. Copy stardeus-mod-template (the whole folder) into the Mods directory, rename it to whatever you need
-3. Open the directory with VS Code. In order to execute the build tasks you will have to select the trust creators option. If you don't trust the authors, examine the source code and all scripts before doing this to be sure its safe.
-4. Edit .vscode/mod.csproj and change the paths to the game DLL files to match your system
-5. Modify ModInfo.json to rename the mod
-6. Press F5 to compile the code and launch the game with your new mod
-
 # Stardeus Modding Concepts
 
 Most of Stardeus components are self-registering using Unity's `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`. This means you won't need hacks like Harmony for things like creating new components, systems, AI actions, etc. There may be some limitations to what can be achieved through code, but you can always visit Stardeus Discord's #stardeus-modding channel and get some help. It is likely that what you need can be exposed easily.
@@ -30,27 +7,6 @@ We are using strings instead of enums in most situations where enum would be a r
 Best way to figure how to create the code is to decompile Stardeus DLL files and analyze them. There are some free decompilers available: JetBrains DotPeek, dnSpy.
 
 Note that everything that uses `RuntimeInitializeOnLoadMethod` will be `sealed` to prevent attempts of extending classes with custom implementations. This is intended, inheritence is bad design in general, composition should be preferred. Also, `RuntimeInitializeOnLoadMethod` will not work with inheritence. Easiest way to modify some component is to create a new component that interacts with existing component. For example, see `Bullet` and `EnergyBullet` - these are separate components and `EnergyBullet` extends the functionality of `Bullet`.
-
-## Publishing your mod on Steam Workshop
-
-### Initial Upload
-
-0. Make sure you have removed any unnecessary files from the mod, including C# compilation artifacts (obj folder), Blender files, unused files from the mod template, etc
-1. Open ModInfo.json, make sure you have changed the Id
-2. Set "SteamWorkshop" to true in ModInfo.json
-3. Delete SteamWorkshopItemId file from the mod folder
-4. Run Stardeus through Steam
-5. Go to Main Menu > Mods > Your Mod and press the "Upload to Steam Workshop" button
-6. Wait until you see a confirmation popup and a browser page will open a new tab with your new mod on Steam Workshop
-
-### Updating Your Mod
-
-0. Do not delete or change the SteamWorkshopItemId file, it has your mod steam id
-1. Make changes to the mod, rebuild the DLL if necessary
-2. Run Stardeus through Steam
-3. Go to Main Menu > Mods > Your Mod and press "Upload to Steam Workshop" button
-
-You can only update the mod if your Steam user is the creator and if the mod is inside the User mods folder, not downloaded through Steam Workshop.
 
 ## Debugging in Visual Studio with breakpoints
 
