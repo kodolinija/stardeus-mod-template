@@ -33,7 +33,24 @@ Note that everything that uses `RuntimeInitializeOnLoadMethod` will be `sealed` 
 
 ## Publishing your mod on Steam Workshop
 
-1. Make a copy of your mod, put it somewhere safe
+### Initial Upload
+
+0. Make sure you have removed any unnecessary files from the mod, including C# compilation artifacts (obj folder), Blender files, unused files from the mod template, etc
+1. Open ModInfo.json, make sure you have changed the Id
+2. Set "SteamWorkshop" to true in ModInfo.json
+3. Delete SteamWorkshopItemId file from the mod folder
+4. Run Stardeus through Steam
+5. Go to Main Menu > Mods > Your Mod and press the "Upload to Steam Workshop" button
+6. Wait until you see a confirmation popup and a browser page will open a new tab with your new mod on Steam Workshop
+
+### Updating Your Mod
+
+0. Do not delete or change the SteamWorkshopItemId file, it has your mod steam id
+1. Make changes to the mod, rebuild the DLL if necessary
+2. Run Stardeus through Steam
+3. Go to Main Menu > Mods > Your Mod and press "Upload to Steam Workshop" button
+
+You can only update the mod if your Steam user is the creator and if the mod is inside the User mods folder, not downloaded through Steam Workshop.
 
 ## Debugging in Visual Studio with breakpoints
 
