@@ -7,4 +7,4 @@ REM remove obj cache
 DEL /Q .\.vscode\obj\*.*
 
 REM build dll
-dotnet build .vscode
+dotnet build .vscode\mod.csproj

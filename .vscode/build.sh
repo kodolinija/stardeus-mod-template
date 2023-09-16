@@ -7,4 +7,4 @@ rm -f ./Libraries/*.*
 rm -f ./.vscode/obj/*.*
 
 # build dll
-dotnet build .vscode
+dotnet build .vscode/mod.csproj
