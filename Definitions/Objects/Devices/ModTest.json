@@ -3,8 +3,8 @@
     "Layer" : "Objects",
     "ParentId" : "Objects/Devices/BaseDevice",
     "Researchable" : {
-        "Prerequisites" : [ 
-            "Research/Technology"
+        "Prerequisites" : [
+            "Research/Construction/Structure"
         ]
     },
     "Components" : [
@@ -26,13 +26,13 @@
             ]
         },
         { "Component" : "EnergyNode" },
-        { 
+        {
             "Component" : "ExampleMod",
             "Properties" : [
                 { "Key" : "Stuff", "Int" : 15 }
             ]
         },
-        { 
+        {
             "Component" : "LightSource",
             "Properties" : [
                 { "Key" : "Radius", "Float" : 3 },
@@ -47,12 +47,12 @@
                 { "Key" : "Difficulty", "Float" : 1 }
             ]
         },
-        { 
+        {
             "Component" : "Constructable",
             "Properties" : [
                 { "Key" : "WorkAmount", "Int" : 1000 },
-                { 
-                    "Key" : "Contents", 
+                {
+                    "Key" : "Contents",
                     "RawMaterials" : [
                         { "TypeId" : "Steel", "StackSize" : 10 },
                         { "TypeId" : "Glass", "StackSize" : 1 }

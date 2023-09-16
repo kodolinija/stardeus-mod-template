@@ -26,8 +26,6 @@ namespace ExampleMod.Systems {
         // old saves, you have to set the MinRequiredVersion
         //public override string MinRequiredVersion => "0.6.89";
 
-        private GameState state;
-
         // By returning something in the Overlays list, your system can add
         // buttons in the top right section of the game UI.
         // Those buttons will toggle the overlays.
@@ -66,8 +64,7 @@ namespace ExampleMod.Systems {
         }
 
         private void OnLoadSave(GameState state) {
-            this.state = state;
-            S.Clock.OnTick.AddListener(OnTick);
+            state.Clock.OnTick.AddListener(OnTick);
             UIPopupWidget.Spawn(IconId.CWarning, "warning".T(),
                 "Note for mod developer. ExampleModSys should be removed from your mod");
         }
