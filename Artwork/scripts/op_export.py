@@ -9,11 +9,31 @@ import copy
 
 TILE_RES = 256
 
+def ensure_collection(path):
+    collections = path.split('/')
+    parent = bpy.context.scene.collection
+
+    for collection_name in collections:
+        # Check if the collection exists within the parent
+        found = False
+        for child in parent.children:
+            if child.name == collection_name:
+                found = True
+                parent = child  # Update the parent to the current collection
+                break
+
+        if not found:
+            # Create the collection if it doesn't exist
+            new_collection = bpy.data.collections.new(collection_name)
+            parent.children.link(new_collection)
+            parent = new_collection  # Update the parent to the new collection
+
+
 def output_path(path):
     blender_dir = os.path.dirname(bpy.data.filepath)
     artwork_dir = os.path.dirname(blender_dir)
-    mod_dir = os.path.dirname(artwork_dir)
-    graphics_dir = os.path.join(mod_dir, "Graphics/")
+    stardeus_dir = os.path.dirname(artwork_dir)
+    graphics_dir = os.path.join(stardeus_dir, "Graphics/")
     if path.endswith("_"):
         path = path[:-1]
     return os.path.join(graphics_dir, path.replace('.', '/'))
@@ -24,6 +44,7 @@ class StardeusExportAllOperator(bpy.types.Operator):
     bl_description = "Exports all objects as sprites"
 
     def execute(self, context):
+        bpy.ops.wm.save_mainfile()
         exit_edit_mode()
         for col_name in SPRITES:
             col = SPRITES[col_name]
@@ -37,6 +58,7 @@ class StardeusExportActiveOperator(bpy.types.Operator):
     bl_description = "Exports active collection as sprites"
 
     def execute(self, context):
+        bpy.ops.wm.save_mainfile()
         exit_edit_mode()
         col_name = bpy.context.view_layer.active_layer_collection.name
         if col_name in SPRITES:
@@ -96,6 +118,7 @@ def exit_edit_mode():
 
 def activate_model(operator, sprite, select_contents=True):
     report(operator, "Activating: " + sprite.path)
+    ensure_collection(sprite.path)
     collection = sprite.path
     for obj in bpy.context.selected_objects:
         obj.select_set(False)
@@ -163,7 +186,7 @@ def export_model(operator, sprite):
         return
 
     scene = bpy.context.scene
-    path = output_path(sprite.path)
+    path = output_path(sprite.output)
 
     if not sprite.is_rotatable:
         render_scene(operator, path + ".png")

@@ -8,8 +8,12 @@ class Sprite:
             lights="Object Lights",
             line_sets=["Object"],
             subset=[],
-            skip_rotations=[]):
+            skip_rotations=[],
+            output=None):
         self.path = path
+        if (output == None):
+            output = path
+        self.output = output
         # width down & up
         self.width_du = width_du
         self.height_du = height_du
@@ -34,11 +38,34 @@ class Sprite:
         self.subset = subset
         self.skip_rotations = skip_rotations
 
+def add_hat(sprites, species, name):
+    # Preview
+    sprites["{}_".format(name)] = Sprite("Beings/Hats.{}/{}/{}_".format(species, name, name), is_rotatable=False)
+    sprites["{}".format(name)] = Sprite(
+        path="Beings/Hats.{}/{}/[N]{}".format(species, name, name),
+        output="Beings/Hats.{}/{}/{}".format(species, name, name))
+    sprites["{}_H".format(name)] = Sprite(
+        path="Beings/Hats.{}/{}/[N]{}_H".format(species, name, name),
+        output="Beings/Hats.{}/{}/{}_H".format(species, name, name))
+
+def add_clothing(sprites, species, name):
+    # Preview
+    sprites["{}_".format(name)] = Sprite("Beings/Clothing.{}/{}/{}_".format(species, name, name), is_rotatable=False)
+
+    # Body Types
+    body_types = ["[F]", "[M]", "[T]", "[L]"]
+    for body_type in body_types:
+        sprites["{}{}".format(body_type, name)] = Sprite(
+            path="Beings/Clothing.{}/{}/{}{}".format(species, name, body_type, name),
+            output="Beings/Clothing/{}/{}/{}/{}{}".format(species, name, body_type, body_type, name)
+        )
+        sprites["{}{}_H".format(body_type, name)] = Sprite(
+            path="Beings/Clothing.{}/{}/{}{}_H".format(species, name, body_type, name),
+            output="Beings/Clothing/{}/{}/{}/{}{}_H".format(species, name, body_type, body_type, name)
+        )
+
 
 SPRITES = {
-    "Logo" : Sprite("Logo", 4, 1, is_rotatable=False, with_outline=False, camera_du="Logo"),
-    "KLLogo" : Sprite("KLLogo", 4, 1, is_rotatable=False, with_outline=False, camera_du="Logo"),
-    "Wallpaper" : Sprite("Wallpaper", 10, 10, is_rotatable=False, with_outline=False, camera_du="Wallpaper"),
     # Devices
     "Assembler": Sprite("Objects/Devices/Assembler", 2, 2, 1, 3),
     "AutoDoc": Sprite("Objects/Devices/AutoDoc", 2, 2, 1, 3),
@@ -70,7 +97,6 @@ SPRITES = {
     "EnergyConnector": Sprite("Objects/Devices/EnergyConnector", 1, 2),
     "EnergyConnectorBig": Sprite("Objects/Devices/EnergyConnectorBig", 1, 2),
     "Fabricator": Sprite("Objects/Devices/Fabricator", 3, 4),
-    "Xenodetector": Sprite("Objects/Devices/Xenodetector", 1, 2),
     "FloorSocket": Sprite("Objects/Devices/FloorSocket"),
     "FluidCannon": Sprite("Objects/Devices/FluidCannon", 2, 3),
     "TractorBeam": Sprite("Objects/Devices/TractorBeam", 2, 3),
@@ -78,8 +104,6 @@ SPRITES = {
     "FTLDrive": Sprite("Objects/Devices/FTLDrive", 3, 3),
     "Furnace": Sprite("Objects/Devices/Furnace", 3, 4),
     "FusionDrive": Sprite("Objects/Devices/FusionDrive", 3, 3),
-    "GPUModule": Sprite("Objects/Devices/GPUModule", 1, 2),
-    "GPUModuleMini": Sprite("Objects/Devices/GPUModuleMini", 1, 2),
     "Grinder": Sprite("Objects/Devices/Grinder", 3, 4),
     "Jukebox": Sprite("Objects/Devices/Jukebox", 1, 2),
     "Heater": Sprite("Objects/Devices/Heater", 1, 2),
@@ -89,20 +113,13 @@ SPRITES = {
     "LightBlock": Sprite("Objects/Devices/LightBlock", is_rotatable=False),
     "Loom": Sprite("Objects/Devices/Loom", 2, 3),
     "MatterReactor": Sprite("Objects/Devices/MatterReactor", 2, 3),
+    "MinerMini": Sprite("Objects/Devices/MinerMini", 2, 3),
     "MatterReactorMini": Sprite("Objects/Devices/MatterReactorMini", 2, 2, 1, 3),
-    "AutodrillRig": Sprite("Objects/Devices/AutodrillRig", 2, 3),
     "MemoryModule": Sprite("Objects/Devices/MemoryModule", 1, 2),
     "MemoryModuleMini": Sprite("Objects/Devices/MemoryModuleMini", 1, 2),
     "MLBooth": Sprite("Objects/Devices/MLBooth", 1, 2),
-
-    "DatoidLoader": Sprite("Objects/Devices/DatoidLoader", 1, 2, is_rotatable=False),
-    "DataHarvesterBasic": Sprite("Objects/Devices/DataHarvesterBasic", 1, 2),
-    "DataHarvesterAdvanced": Sprite("Objects/Devices/DataHarvesterAdvanced", 2, 2, 1, 3),
-    "DataHarvesterQuantum": Sprite("Objects/Devices/DataHarvesterQuantum", 2, 3, is_rotatable=False),
-
     "NuclearReactor": Sprite("Objects/Devices/NuclearReactor", 3, 4),
     "NutrientExtractor": Sprite("Objects/Devices/NutrientExtractor", 3, 4),
-    "OxygenPumpMini": Sprite("Objects/Devices/OxygenPumpMini", 1, 1),
     "OxygenPump": Sprite("Objects/Devices/OxygenPump", 2, 2, 1, 3),
     "ParticleCollector": Sprite("Objects/Devices/ParticleCollector", 2, 3, 3, 2, camera_lr="flat"),
     "Planter": Sprite("Objects/Devices/Planter", 2, 2, camera_du="F", camera_lr="flat"),
@@ -117,7 +134,6 @@ SPRITES = {
     "Converter": Sprite("Objects/Devices/Converter", 2, 2, 1, 3),
     "Recycler": Sprite("Objects/Devices/Recycler", 3, 4),
     "Refinery": Sprite("Objects/Devices/Refinery", 3, 4),
-    "Centrifuge": Sprite("Objects/Devices/Centrifuge", 3, 4),
     "RepairStation": Sprite("Objects/Devices/RepairStation", 1, 2),
     "ResearchStation": Sprite("Objects/Devices/ResearchStation", 3, 2, 2, 3, camera_lr="flat"),
     "SecurityControls": Sprite("Objects/Devices/SecurityControls", 2, 2, 1, 3),
@@ -134,8 +150,6 @@ SPRITES = {
     "StardeusLogo": Sprite("FX/StardeusLogo", 12, 2, is_rotatable=False),
     "StasisArray": Sprite("Objects/Devices/StasisArray", 5, 6, is_rotatable=False),
     "StasisArrayMatrix": Sprite("Objects/Devices/StasisArrayMatrix", 5, 6, is_rotatable=False),
-    "CargoCopter": Sprite("Objects/Devices/CargoCopter", 2, 2, is_rotatable=False),
-    "CargoCopter_Flying": Sprite("Objects/Devices/CargoCopter_Flying", 2, 2, is_rotatable=False),
     "StasisPod": Sprite("Objects/Devices/StasisPod", 2, 2),
     "StasisPod_Flying": Sprite("Objects/Devices/StasisPod_Flying", 2, 2),
     "Storage": Sprite("Objects/Devices/Storage", 3, 4),
@@ -157,6 +171,25 @@ SPRITES = {
     "WinchAnchor": Sprite("Objects/Devices/WinchAnchor"),
     "WinchHook": Sprite("Objects/Devices/WinchHook"),
 
+    "KaraokeMachine": Sprite("Objects/Devices/KaraokeMachine", 1, 2),
+    "LitterBox": Sprite("Objects/Devices/LitterBox", 1, 1),
+
+    # Decorations
+    "Sculpture01": Sprite("Objects/Decorations/Sculpture01", 1, 1),
+    "SculptureRocketWood": Sprite("Objects/Cosmetics/SculptureRocketWood", 1, 1, is_rotatable=False),
+    "PlasticFlowers01": Sprite("Objects/Cosmetics/PlasticFlowers01", 1, 1),
+    "PlasticFlowers02": Sprite("Objects/Cosmetics/PlasticFlowers02", 1, 1),
+    "PlasticFlowers03": Sprite("Objects/Cosmetics/PlasticFlowers03", 1, 1),
+    "RubberDuck": Sprite("Objects/Cosmetics/RubberDuck", 1, 1),
+    "AbstractSculpture": Sprite("Objects/Cosmetics/AbstractSculpture", 1, 2),
+    "SculptureCubeBlocks": Sprite("Objects/Cosmetics/SculptureCubeBlocks", 1, 2),
+    "SculptureDNA": Sprite("Objects/Cosmetics/SculptureDNA", 1, 2, is_rotatable=False),
+    "SculptureCaffeine": Sprite("Objects/Cosmetics/SculptureCaffeine", 1, 1),
+    "SculptureCube": Sprite("Objects/Cosmetics/SculptureCube", 1, 1),
+    "IndustrialStrengthHairDryer": Sprite("Objects/Cosmetics/IndustrialStrengthHairDryer", 1, 1),
+    "SculptureAtom": Sprite("Objects/Cosmetics/SculptureAtom", 1, 1),
+
+
     # Furniture
     "Sign": Sprite("Objects/Furniture/Sign", 1, 1, is_rotatable=False),
     "Pantry": Sprite("Objects/Furniture/Pantry", 1, 2),
@@ -175,16 +208,16 @@ SPRITES = {
     "Sofa": Sprite("Objects/Furniture/Sofa", 2, 1, 1, 2, camera_lr="flat"),
     "Armchair": Sprite("Objects/Furniture/Armchair"),
     "PetBed": Sprite("Objects/Furniture/PetBed"),
+    "PetBedNew": Sprite("Objects/Furniture/PetBedNew"),
     "Vase01": Sprite("Objects/Furniture/Vase01", is_rotatable=False),
+    "Vase02": Sprite("Objects/Furniture/Vase02", is_rotatable=False),
     "BedSteel": Sprite("Objects/Furniture/BedSteel", 1, 2, 2, 1, camera_du="F", camera_lr="flat"),
     "BedWood": Sprite("Objects/Furniture/BedWood", 1, 2, 2, 1, camera_du="F", camera_lr="flat"),
     "BedSteelDouble": Sprite("Objects/Furniture/BedSteelDouble", 2, 2, camera_du="F", camera_lr="flat"),
     "BedWoodDouble": Sprite("Objects/Furniture/BedWoodDouble", 2, 2, camera_du="F", camera_lr="flat"),
+    "PingPongTable": Sprite("Objects/Furniture/PingPongTable", 2, 2, 1, 3),
 
     # Structure
-    "OxyMaticFloor": Sprite("Structure/Floors/OxyMaticFloor", camera_du="TD", is_rotatable=False, with_outline=False),
-    "HeatMaticFloor": Sprite("Structure/Floors/HeatMaticFloor", camera_du="TD", is_rotatable=False, with_outline=False),
-    "CoolMaticFloor": Sprite("Structure/Floors/CoolMaticFloor", camera_du="TD", is_rotatable=False, with_outline=False),
     "TractorBeamTarget": Sprite("Structure/Floors/TractorBeamTarget", camera_du="TD", is_rotatable=False, with_outline=False),
     "TractorBeamTarget_1": Sprite("Structure/Floors/TractorBeamTarget_1", camera_du="TD", is_rotatable=False, with_outline=False),
     "FloorVent01": Sprite("Structure/Floors/FloorVent01", camera_du="TD", is_rotatable=False, with_outline=False),
@@ -226,25 +259,21 @@ SPRITES = {
     "Wall01": Sprite("Structure/Walls/Wall01", 4, 4, camera_du="TD", is_rotatable=False, lights="Wall Lights", line_sets=["Wall"]),
     "Wall02": Sprite("Structure/Walls/Wall02", 4, 4, camera_du="TD", is_rotatable=False, lights="Wall Lights", line_sets=["Wall"]),
     "WallReinforced01": Sprite("Structure/Walls/WallReinforced01", 4, 4, camera_du="TD", is_rotatable=False, lights="Wall Lights", line_sets=["Wall"]),
-    "WallArmored01": Sprite("Structure/Walls/WallArmored01", 4, 4, camera_du="TD", is_rotatable=False, lights="Wall Lights", line_sets=["Wall"]),
 
     # Vents
     "Vent01": Sprite("Structure/Walls/Vent01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
     "Vent02": Sprite("Structure/Walls/Vent02", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
     "VentReinforced01": Sprite("Structure/Walls/VentReinforced01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
-    "VentArmored01": Sprite("Structure/Walls/VentArmored01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
 
     # Wall devices
     "WallSocket01": Sprite("Structure/Walls/WallSocket01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
     "WallSocket02": Sprite("Structure/Walls/WallSocket02", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
     "WallSocketReinforced01": Sprite("Structure/Walls/WallSocketReinforced01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
-    "WallSocketArmored01": Sprite("Structure/Walls/WallSocketArmored01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
 
     # Windows
     "Window01": Sprite("Structure/Walls/Window01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
     "Window02": Sprite("Structure/Walls/Window02", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
     "WindowReinforced01": Sprite("Structure/Walls/WindowReinforced01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
-    "WindowArmored01": Sprite("Structure/Walls/WindowArmored01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"], subset=["_R", "_D"]),
 
     # Doors
     "Door01": Sprite("Structure/Doors/Door01", 1, 1, camera_du="TD", lights="Wall Lights", is_rotatable=False, line_sets=["Wall"],
@@ -255,57 +284,39 @@ SPRITES = {
         subset=["_R", "_D", "_1_R", "_2_R", "_3_R", "_1_D", "_2_D", "_3_D"]),
 
     # Beings
-    "Human.[F]Body01_Template": Sprite("Beings/Bodies/Human.[F]Body01_Template"),
-    "Human.[F]Body01_H_Template": Sprite("Beings/Bodies/Human.[F]Body01_H_Template"),
-    "Human.[M]Body01_Template": Sprite("Beings/Bodies/Human.[M]Body01_Template"),
-    "Human.[M]Body01_H_Template": Sprite("Beings/Bodies/Human.[M]Body01_H_Template"),
+    # T - Thin
+    "Human.[T]Body01": Sprite("Beings/Bodies/Human.[T]Body01"),
+    "Human.[T]Body01_H": Sprite("Beings/Bodies/Human.[T]Body01_H"),
 
+    # M - Masculine
+    "Human.[M]Body01": Sprite("Beings/Bodies/Human.[M]Body01"),
+    "Human.[M]Body01_H": Sprite("Beings/Bodies/Human.[M]Body01_H"),
+
+    # F - Feminine
     "Human.[F]Body01": Sprite("Beings/Bodies/Human.[F]Body01"),
     "Human.[F]Body01_H": Sprite("Beings/Bodies/Human.[F]Body01_H"),
+
+    # L - Large
+    "Human.[L]Body01": Sprite("Beings/Bodies/Human.[L]Body01"),
+    "Human.[L]Body01_H": Sprite("Beings/Bodies/Human.[L]Body01_H"),
+
+    # Heads and hair are only M and F, they can be matched with T and L body types too
+    "Human.[M]Head01": Sprite("Beings/Heads/Human.[M]Head01"),
+    "Human.[M]Head01_H": Sprite("Beings/Heads/Human.[M]Head01_H"),
     "Human.[F]Head01": Sprite("Beings/Heads/Human.[F]Head01"),
     "Human.[F]Head01_H": Sprite("Beings/Heads/Human.[F]Head01_H"),
+
+    "Human.[M]Hair01": Sprite("Beings/Hair/Human.[M]Hair01"),
+    "Human.[M]Hair01_H": Sprite("Beings/Hair/Human.[M]Hair01_H"),
     "Human.[F]Hair01": Sprite("Beings/Hair/Human.[F]Hair01"),
     "Human.[F]Hair01_H": Sprite("Beings/Hair/Human.[F]Hair01_H"),
+
 
     # Weapons
     "EnergyRifle01_": Sprite("Beings/Weapons/EnergyRifle01_", is_rotatable=False),
     "EnergyRifle01": Sprite("Beings/Weapons/EnergyRifle01"),
-
-    # Underscore in the end will be removed, so this will become a preview version
-    "Human.[N]Hat01_": Sprite("Beings/Hats/Human.[N]Hat01_", is_rotatable=False),
-    "Human.[N]Hat01": Sprite("Beings/Hats/Human.[N]Hat01"),
-    "Human.[N]Hat01_H": Sprite("Beings/Hats/Human.[N]Hat01_H"),
-
-    # Dress
-    "Human.[F]Clothing01_": Sprite("Beings/Clothing/Human.[F]Clothing01_", is_rotatable=False),
-    "Human.[F]Clothing01": Sprite("Beings/Clothing/Human.[F]Clothing01"),
-    "Human.[F]Clothing01_H": Sprite("Beings/Clothing/Human.[F]Clothing01_H"),
-
-    "Human.[F]SpaceSuit01_": Sprite("Beings/Clothing/Human.[F]SpaceSuit01_", is_rotatable=False),
-    "Human.[F]SpaceSuit01": Sprite("Beings/Clothing/Human.[F]SpaceSuit01"),
-    "Human.[F]SpaceSuit01_H": Sprite("Beings/Clothing/Human.[F]SpaceSuit01_H"),
-
-    "Human.[N]SpaceHelmet01_": Sprite("Beings/Hats/Human.[N]SpaceHelmet01_", is_rotatable=False),
-    "Human.[N]SpaceHelmet01": Sprite("Beings/Hats/Human.[N]SpaceHelmet01"),
-    "Human.[N]SpaceHelmet01_H": Sprite("Beings/Hats/Human.[N]SpaceHelmet01_H"),
-
-    "Human.[M]Body01": Sprite("Beings/Bodies/Human.[M]Body01"),
-    "Human.[M]Body01_H": Sprite("Beings/Bodies/Human.[M]Body01_H"),
-    "Human.[M]Head01": Sprite("Beings/Heads/Human.[M]Head01"),
-    "Human.[M]Head01_H": Sprite("Beings/Heads/Human.[M]Head01_H"),
-    "Human.[M]Hair01": Sprite("Beings/Hair/Human.[M]Hair01"),
-    "Human.[M]Hair01_H": Sprite("Beings/Hair/Human.[M]Hair01_H"),
-
-    "Human.[M]Clothing01_": Sprite("Beings/Clothing/Human.[M]Clothing01_", is_rotatable=False),
-    "Human.[M]Clothing01": Sprite("Beings/Clothing/Human.[M]Clothing01"),
-    "Human.[M]Clothing01_H": Sprite("Beings/Clothing/Human.[M]Clothing01_H"),
-
-    # The _ version is a preview one, no rotation
-    "Human.[M]SpaceSuit01_": Sprite("Beings/Clothing/Human.[M]SpaceSuit01_", is_rotatable=False),
-    # This is the main version, which is rotatable
-    "Human.[M]SpaceSuit01": Sprite("Beings/Clothing/Human.[M]SpaceSuit01"),
-    # Horizontal version, for lying down
-    "Human.[M]SpaceSuit01_H": Sprite("Beings/Clothing/Human.[M]SpaceSuit01_H"),
+    "Knife01_": Sprite("Beings/Weapons/Knife01_", is_rotatable=False),
+    "Knife01": Sprite("Beings/Weapons/Knife01"),
 
     "CleaningBot.[N]Body01": Sprite("Beings/Bodies/CleaningBot.[N]Body01"),
 
@@ -328,15 +339,39 @@ SPRITES = {
     "Crawler.[N]Body01_1": Sprite("Beings/Bodies/Crawler.[N]Body01_1"),
 
     "Cat.[N]Body01": Sprite("Beings/Bodies/Cat.[N]Body01"),
+    "Cat.[N]Body02": Sprite("Beings/Bodies/Cat.[N]Body02"),
+    "Cat.[N]Body03": Sprite("Beings/Bodies/Cat.[N]Body03"),
     "Cat.[N]Body01_H": Sprite("Beings/Bodies/Cat.[N]Body01_H"),
+    "Cat.[N]Body02_H": Sprite("Beings/Bodies/Cat.[N]Body02_H"),
+    "Cat.[N]Body03_H": Sprite("Beings/Bodies/Cat.[N]Body03_H"),
+
+    # If you see something that is in this file but not in game yet, it's already created but not part of any content update
+    # Don't introduce these in mods please, because core game will overwrite that soon
+    "Sheep.[N]Body01": Sprite("Beings/Bodies/Sheep.[N]Body01"),
+    "Sheep.[N]Body01_H": Sprite("Beings/Bodies/Sheep.[N]Body01_H"),
+    "Sheep_Shaved.[N]Body01": Sprite("Beings/Bodies/Sheep_Shaved.[N]Body01"),
+    "Sheep_Shaved.[N]Body01_H": Sprite("Beings/Bodies/Sheep_Shaved.[N]Body01_H"),
+
+    "Chic.[N]Body01": Sprite("Beings/Bodies/Chic.[N]Body01"),
+    "Chic.[N]Body01_H": Sprite("Beings/Bodies/Chic.[N]Body01_H"),
+
+    "Hen.[N]Body01": Sprite("Beings/Bodies/Hen.[N]Body01"),
+    "Hen.[N]Body01_H": Sprite("Beings/Bodies/Hen.[N]Body01_H"),
+
+    "Rooster.[N]Body01": Sprite("Beings/Bodies/Rooster.[N]Body01"),
+    "Rooster.[N]Body01_H": Sprite("Beings/Bodies/Rooster.[N]Body01_H"),
+
+    "Cow.[N]Body01": Sprite("Beings/Bodies/Cow.[N]Body01"),
+    "Cow.[N]Body01_H": Sprite("Beings/Bodies/Cow.[N]Body01_H"),
+
+    "Pig.[N]Body01": Sprite("Beings/Bodies/Pig.[N]Body01"),
+    "Pig.[N]Body01_H": Sprite("Beings/Bodies/Pig.[N]Body01_H"),
 
     "Dog.[N]Body01": Sprite("Beings/Bodies/Dog.[N]Body01"),
     "Dog.[N]Body01_H": Sprite("Beings/Bodies/Dog.[N]Body01_H"),
 
-    # Attached Crawler Hat
-    "Human.[N]Crawler01": Sprite("Beings/Hats/Human.[N]Crawler01"),
-    "Human.[N]Crawler01_": Sprite("Beings/Hats/Human.[N]Crawler01_", is_rotatable=False),
-    "Human.[N]Crawler01_H": Sprite("Beings/Hats/Human.[N]Crawler01_H"),
+    "Dog.[N]Body02": Sprite("Beings/Bodies/Dog.[N]Body02"),
+    "Dog.[N]Body02_H": Sprite("Beings/Bodies/Dog.[N]Body02_H"),
 
     # Plants
     "Wheat": Sprite("Obj/Plants/Wheat", is_rotatable=False,
@@ -369,7 +404,6 @@ SPRITES = {
 
     # Eggs
     "Egg01": Sprite("Obj/Eggs/Egg01", is_rotatable=False),
-    "Egg01_Hatched": Sprite("Obj/Eggs/Egg01_Hatched", is_rotatable=False),
 
     # Misc
     "C42": Sprite("Obj/Misc/C42", is_rotatable=False),
@@ -384,28 +418,13 @@ SPRITES = {
     "Bread": Sprite("Obj/Meals/Bread", is_rotatable=False),
     "SurvivalMeal": Sprite("Obj/Meals/SurvivalMeal", is_rotatable=False),
 
-    # Datoids
-    "DatoidBasic": Sprite("Obj/Datoids/DatoidBasic", is_rotatable=False),
-    "DatoidBiotic": Sprite("Obj/Datoids/DatoidBiotic", is_rotatable=False),
-    "DatoidPhyto": Sprite("Obj/Datoids/DatoidPhyto", is_rotatable=False),
-    "DatoidEnergy": Sprite("Obj/Datoids/DatoidEnergy", is_rotatable=False),
-    "DatoidNuclear": Sprite("Obj/Datoids/DatoidNuclear", is_rotatable=False),
-    "DatoidQuantum": Sprite("Obj/Datoids/DatoidQuantum", is_rotatable=False),
-    "DatoidSynthetic": Sprite("Obj/Datoids/DatoidSynthetic", is_rotatable=False),
-    "DatoidTech": Sprite("Obj/Datoids/DatoidTech", is_rotatable=False),
-    "DatoidTechHigh": Sprite("Obj/Datoids/DatoidTechHigh", is_rotatable=False),
-    "DatoidAlien": Sprite("Obj/Datoids/DatoidAlien", is_rotatable=False),
-
     # Materials
-    "DarkMatter": Sprite("Obj/Materials/DarkMatter", is_rotatable=False),
     "Steel": Sprite("Obj/Materials/Steel", is_rotatable=False),
     "CopperPlate": Sprite("Obj/Materials/CopperPlate", is_rotatable=False),
     "TitaniumPlate": Sprite("Obj/Materials/TitaniumPlate", is_rotatable=False),
-    "LeadPlate": Sprite("Obj/Materials/LeadPlate", is_rotatable=False),
     "Microchip": Sprite("Obj/Materials/Microchip", is_rotatable=False),
     "Glass": Sprite("Obj/Materials/Glass", is_rotatable=False),
     "BatteryCell": Sprite("Obj/Materials/BatteryCell", is_rotatable=False),
-    "NuclearCell": Sprite("Obj/Materials/NuclearCell", is_rotatable=False),
     "Rock": Sprite("Obj/Materials/Rock", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Protein": Sprite("Obj/Materials/Protein", is_rotatable=False),
     "PlantFiber": Sprite("Obj/Materials/PlantFiber", is_rotatable=False),
@@ -418,13 +437,11 @@ SPRITES = {
     "CarbonFiber": Sprite("Obj/Materials/CarbonFiber", is_rotatable=False),
     "Copper": Sprite("Obj/Materials/Copper", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Iron": Sprite("Obj/Materials/Iron", is_rotatable=False, line_sets=["ObjectBorder"]),
-    "Lead": Sprite("Obj/Materials/Lead", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Silicon": Sprite("Obj/Materials/Silicon", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Lithium": Sprite("Obj/Materials/Lithium", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Soil": Sprite("Obj/Materials/Soil", is_rotatable=False),
     "Titanium": Sprite("Obj/Materials/Titanium", is_rotatable=False, line_sets=["ObjectBorder"]),
     "Uranium": Sprite("Obj/Materials/Uranium", is_rotatable=False, line_sets=["ObjectBorder"]),
-    "EnrichedUranium": Sprite("Obj/Materials/EnrichedUranium", is_rotatable=False),
     "Wood": Sprite("Obj/Materials/Wood", is_rotatable=False),
     "Biowaste": Sprite("Obj/Materials/Biowaste", is_rotatable=False),
     "Water": Sprite("Obj/Materials/Water", is_rotatable=False),
@@ -451,8 +468,6 @@ SPRITES = {
     "PigmentRed": Sprite("Obj/Materials/PigmentRed", is_rotatable=False),
     "PigmentGreen": Sprite("Obj/Materials/PigmentGreen", is_rotatable=False),
     "PigmentBlue": Sprite("Obj/Materials/PigmentBlue", is_rotatable=False),
-    "CrawlerGoo": Sprite("Obj/Materials/CrawlerGoo", is_rotatable=False),
-    "Biofuel": Sprite("Obj/Materials/Biofuel", is_rotatable=False),
 
     # Upgrades
     "ReactorEfficiencyUpgrade": Sprite("Obj/Upgrades/ReactorEfficiencyUpgrade", is_rotatable=False),
@@ -460,10 +475,25 @@ SPRITES = {
     "AsimovOverrideUpgrade": Sprite("Obj/Upgrades/AsimovOverrideUpgrade", is_rotatable=False),
     "StarcredsMiningUpgrade": Sprite("Obj/Upgrades/StarcredsMiningUpgrade", is_rotatable=False),
     "ShuttleStorageUpgrade": Sprite("Obj/Upgrades/ShuttleStorageUpgrade", is_rotatable=False),
-    "ShuttleDrillUpgrade": Sprite("Obj/Upgrades/ShuttleDrillUpgrade", is_rotatable=False),
     "AutoConnectUpgrade": Sprite("Obj/Upgrades/AutoConnectUpgrade", is_rotatable=False),
     "DiskCompressionUpgrade": Sprite("Obj/Upgrades/DiskCompressionUpgrade", is_rotatable=False),
     "MemoryCompressionUpgrade": Sprite("Obj/Upgrades/MemoryCompressionUpgrade", is_rotatable=False),
     "AutoPilotUpgrade": Sprite("Obj/Upgrades/AutoPilotUpgrade", is_rotatable=False),
-    "ThrusterUpgrade": Sprite("Obj/Upgrades/ThrusterUpgrade", is_rotatable=False),
 }
+
+# Switching to these in blender will automatically create the required collections
+# functions are described above
+add_hat(SPRITES, "Human", "Hat01")
+add_hat(SPRITES, "Human", "Hat04")
+add_hat(SPRITES, "Human", "Hat05")
+add_hat(SPRITES, "Human", "BaseballCap")
+add_hat(SPRITES, "Human", "CrawlerFacehug")
+add_hat(SPRITES, "Human", "SpaceHelmet01")
+add_hat(SPRITES, "Human", "SpaceHelmet02")
+add_clothing(SPRITES, "Human", "Uniform01")
+add_clothing(SPRITES, "Human", "Uniform02")
+add_clothing(SPRITES, "Human", "Uniform03")
+add_clothing(SPRITES, "Human", "SpaceSuit01")
+add_clothing(SPRITES, "Human", "SpaceSuit02")
+add_clothing(SPRITES, "Human", "Tracksuit01")
+add_clothing(SPRITES, "Human", "Tracksuit02")
