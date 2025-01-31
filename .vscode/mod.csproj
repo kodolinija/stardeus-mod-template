@@ -7,7 +7,7 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 
         <OutputType>Library</OutputType>
-        <TargetFramework>net48</TargetFramework>
+        <TargetFramework>net481</TargetFramework>
         <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
         <PlatformTarget>x64</PlatformTarget>
 
@@ -42,7 +42,7 @@
 
         <!-- Stardeus -->
         <!-- Make this path point to Stardeus/Stardeus_Data/Managed/*.dll on your system -->
-        <Reference Include="D:/SteamLibrary/steamapps/common/Stardeus/Stardeus_Data/Managed/*.dll">
+        <Reference Include="../../../../.steam/steam/steamapps/common/Stardeus/Stardeus_Data/Managed/*.dll">
             <!-- Do not copy game DLL files to the output folder -->
             <Private>False</Private>
         </Reference>
