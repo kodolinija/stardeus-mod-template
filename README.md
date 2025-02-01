@@ -52,7 +52,8 @@ When your mod is ready, you can share it with the world by uploading it to the S
 ### Initial Upload
 
 0. Make sure you have removed any unnecessary files and folders from the mod, including, .vscode, .git, Artwork, Blender files, any unused files from the mod template, etc
-1. Remove the `SteamWorkshopItemId` file.
+1. Make sure your mod is not next to `Core` mod, but instead is in the user mod directory. You can open that directory via `Main Menu` > `Mods` > `About Mods`
+2. Remove the `SteamWorkshopItemId` file.
 1. Edit the `ModInfo.json` and change the `SteamWorkshop` from `false` to `true`.
 2. Make sure you have changed the `ModCover.jpg` and removed any unnecessary files that were in the template.
 3. Run Stardeus through Steam and open `Main Menu > Mods > Your Mod`.
