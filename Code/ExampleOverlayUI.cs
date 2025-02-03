@@ -22,7 +22,7 @@ namespace ExampleMod.UI {
         public Entity Entity => null;
         private UDB header;
 
-        private void DoSomethig() {
+        private void DoSomething() {
             // For this example, let's increment the number and rebuild the UI
             sys.SomeVariable++;
             header.NeedsListRebuild = true;
@@ -60,7 +60,7 @@ namespace ExampleMod.UI {
             res.Add(header);
 
             res.Add(UDB.Create(this, UDBT.IText, IconId.CInfo, "some.info".T())
-                .WithIconClickFunction(DoSomethig)
+                .WithIconClickFunction(DoSomething)
                 // Never do someNumber.ToString(), always use Units.XNum or Units.Num
                 // that way there will be no garbage
                 .WithText(Units.XNum(sys.SomeVariable)));

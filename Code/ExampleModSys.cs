@@ -66,7 +66,7 @@ namespace ExampleMod.Systems {
         private void OnLoadSave(GameState state) {
             state.Clock.OnTick.AddListener(OnTick);
             UIPopupWidget.Spawn(IconId.CWarning, "warning".T(),
-                "Note for mod developer. ExampleModSys should be removed from your mod");
+                "Note for mod developer. ExampleModSys should be removed from your mod.<br>A new overlay button was added to the <b>bottom right</b> of the screen.");
         }
 
         // If your system depends on AreasSys, for example, you may want to
@@ -75,7 +75,6 @@ namespace ExampleMod.Systems {
             D.Warn("Areas initialized");
         }
 
-        // OnTickAsync should be preferred over this
         private void OnTick(long ticks) {
             D.Warn("Ticking synchronously. Tick: {0}", ticks);
             D.Err("PLEASE REMOVE Clock.OnTick LISTENER IF YOU DON'T NEED IT IN YOUR MOD");

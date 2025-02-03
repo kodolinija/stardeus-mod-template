@@ -1,9 +1,11 @@
 {
     "Id" : "Template",
+    // Change this to true in order to share your mod on Steam Workshop
     "SteamWorkshop" : false,
+    // Please create your own ModCover.jpg as well
     "Name" : "Stardeus Mod Template",
     "Description" : "Example Stardeus mod template with VS Code. Contains official examples of how to mod certain aspects of the game. See more details at the GitHub repo: https://github.com/kodolinija/stardeus-mod-template",
     "ModVersion" : "1.1.0",
-    "GameVersion" : "0.12.6",
+    "GameVersion" : "0.12.7",
     "Dependencies" : [ "Core" ]
 }
