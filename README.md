@@ -60,6 +60,10 @@ When your mod is ready, you can share it with the world by uploading it to the S
 4. Press the `Upload to Steam Workshop` button.
 5. A confirmation popup will appear shortly.
 
+### Troubleshooting
+
+- If upload fails with `k_EResultLimitExceeded`, it's possible that the ModCover.jpg is too large. Try reducing the cover size to < 150Kb.
+
 ### Updating Your Mod
 
 0. Do not delete or change the `SteamWorkshopItemId` file, it has your mod steam id
