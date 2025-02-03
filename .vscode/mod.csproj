@@ -42,7 +42,7 @@
 
         <!-- Stardeus -->
         <!-- Make this path point to Stardeus/Stardeus_Data/Managed/*.dll on your system -->
-        <Reference Include="D:/SteamLibrary/steamapps/common/Stardeus/Stardeus_Data/Managed/*.dll">
+        <Reference Include="C:/Program Files (x86)/Steam/steamapps/common/Stardeus/Stardeus_Data/Managed/*.dll">
             <!-- Do not copy game DLL files to the output folder -->
             <Private>False</Private>
         </Reference>

@@ -12,7 +12,7 @@
             // This should point to your Stardeus.exe
             // Note that Steam will relaunch the game, so if you are planning to use a debugger, you will have
             // to attach to the game *after* steam has relaunched it
-            "windows": {"type": "clr", "program": "D:/SteamLibrary/steamapps/common/Stardeus/Stardeus.exe"},
+            "windows": {"type": "clr", "program": "C:/Program Files (x86)/Steam/steamapps/common/Stardeus/Stardeus.exe"},
             "linux": {"type":"coreclr", "program": "echo", "args":"It is advised to run from Steam Menu for Stardeus."},
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",

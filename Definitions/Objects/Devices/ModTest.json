@@ -1,4 +1,7 @@
 {
+    // Stardeus JSON files have "// comment" support. If you're using VSCode,
+    // it may show JSON errors, to fix this, you can change the file type to "Json With Comments":
+    // https://stackoverflow.com/questions/69379869/how-to-set-json-with-comment-in-vscode
     "ToolPath" : "Devices/Facilities",
     "Layer" : "Objects",
     "ParentId" : "Objects/Devices/BaseDevice",
@@ -12,7 +15,13 @@
             "Component" : "TileTransform",
             "Properties" : [
                 { "Key" : "IsRotatable", "Bool" : true },
-                { "Key" : "WorkSpot", "Vector2" : { "x" : 0, "y" : -1 } },
+                // If this object would have an Operatable component, it would need a WorkSpot
+                // { "Key" : "WorkSpot", "Vector2" : { "x" : 0, "y" : -1 } },
+
+                // Input / output ports are usually required for storages and crafting devices
+                { "Key" : "InPort", "Vector2" : { "x" : 1, "y" : -1 } },
+                { "Key" : "OutPort", "Vector2" : { "x" : 1, "y" : -1 } },
+
                 { "Key" : "Height", "Int" : 1 },
                 { "Key" : "Width", "Int" : 2 }
             ]
@@ -21,15 +30,32 @@
             "Component" : "TileGraphics",
             "Properties" : [
                 { "Key" : "Type", "String": "Object" },
+                // Most devices will be visually tall, therefore their sprites will be
+                // taller than the width x height defined in TileTransform above
+                // A device with 2x2 TileTransform width/height will use a 2x3 sprite.
+                // For an example of a flat device without height, look at ChargeStation or Battery in Core mod
                 { "Key" : "HasHeight", "Bool": true },
                 { "Key" : "Graphic", "String": "Objects/Devices/ModTest" }
             ]
         },
-        { "Component" : "EnergyNode" },
         {
+            "Component" : "ElectricNode",
+            "Properties" : [
+                { "Key" : "IsConsumer", "Bool" : true }
+            ]
+        },
+        {
+            "Component" : "WithFuse",
+            "Properties" : [
+                { "Key" : "MalfunctionWeight", "Float": 0.25 }
+            ]
+        },
+        {
+            // This component is defined in the ExampleModComp.cs
             "Component" : "ExampleMod",
             "Properties" : [
-                { "Key" : "Stuff", "Int" : 15 }
+                // This variable will be readable in OnConfig() of the component
+                { "Key" : "EnergyCost", "Int" : 15 }
             ]
         },
         {
@@ -50,16 +76,14 @@
         {
             "Component" : "Constructable",
             "Properties" : [
-                { "Key" : "WorkAmount", "Int" : 1000 },
+                { "Key" : "WorkAmount", "Int" : 300 },
                 {
                     "Key" : "Contents",
                     "RawMaterials" : [
-                        { "TypeId" : "Steel", "StackSize" : 10 },
+                        { "TypeId" : "SteelPlate", "StackSize" : 2 },
                         { "TypeId" : "Glass", "StackSize" : 1 }
                     ]
-                },
-                { "Key" : "SkillChecks", "StringSet": ["Construction"] },
-                { "Key" : "SkillCheckAmounts", "IntSet" : [ 3 ] }
+                }
             ]
         }
     ]
