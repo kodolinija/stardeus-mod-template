@@ -9,3 +9,5 @@ Stardeus JSON patching is based on a subset of RFC 6902 (JsonPatch) with some li
 
 See the JSON examples in this folder to understand the capabilities of JSON patching system.
 
+For debugging mods, look at the contents of "Patched" folder next to user mods / saves dir.
+
