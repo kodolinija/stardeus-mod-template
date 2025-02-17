@@ -1,0 +1,15 @@
+{
+    "target" : "Config/Species/Jobs/Orbotron.json",
+    "operations" : [
+        {
+            "op" : "add",
+            "path" : "/StartingJobs/-",
+            "value" : { "Job" : "Medical" }
+        },
+        {
+            "op" : "add",
+            "path" : "/StartingJobs/-",
+            "value" : { "Job" : "Piloting" }
+        }
+    ]
+}

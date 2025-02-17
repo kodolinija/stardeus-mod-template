@@ -1,0 +1,10 @@
+{
+    "target" : "Definitions/Obj/Parts/Core/MiniCore.json",
+    "operations" : [
+        {
+            "op" : "replace",
+            "path" : "/Researchable/Prerequisites",
+            "value" : [ "Research/Robotics/PartsBasic" ]
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    // may all cats be lit!
+    "target" : "Definitions/Beings/Cat01.json",
+    "operations" : [
+        {
+            "op" : "add",
+            "path" : "/Components/-",
+            "value" : {
+                "Component" : "LightSource",
+                "Properties" : [
+                    { "Key" : "Radius", "Float" : 3 },
+                    { "Key" : "Color", "IntSet" : [ 102, 143, 204, 128 ] },
+                    { "Key" : "NeedsEnergy", "Bool" : false }
+                ]
+            }
+        }
+    ]
+}

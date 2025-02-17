@@ -1,0 +1,28 @@
+{
+    // All stardeus JSON patches must have a target
+    "target" : "Config/Traits/Defs/Technophobe.json",
+    // All stardeus JSON patches must have an array of operations
+    "operations" : [
+        // supported operations are "add", "remove", and "replace"
+        {
+            "op" : "remove",
+            // path with [key=value] will match an array element
+            // that contains a property with such value.
+            // this is non-standard extension that is not defined by RFC6902
+            "path" : "/AddsStatModifiers[Component=AIAlignment]"
+        },
+        {
+            "op" : "add",
+            // when path ends with /- it will add a new element to the array
+            // as per RFC6902
+            "path" : "/AddsStatModifiers/-",
+            "value" : {
+                "Component" : "Sanity",
+                "Properties" : [
+                    { "Key" : "Value", "Float" : -0.2 },
+                    { "Key" : "Type", "String" : "AddsPercent" }
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    // Turn Connector 8-20 into Connector 16-40
+    "target" : "Definitions/Objects/Devices/EnergyConnector.json",
+    "operations" : [
+        {
+            "op" : "replace",
+            "path" : "/TranslationVars",
+            "value" : [ 16, 40 ]
+        },
+        {
+            "op" : "replace",
+            "path" : "/Components[Component=ElectricNode]/Properties[Key=MaxConnections]/Int",
+            "value" : 16
+        },
+        {
+            "op" : "replace",
+            "path" : "/Components[Component=ElectricNode]/Properties[Key=ConnectorRange]/Int",
+            "value" : 40
+        }
+    ]
+}

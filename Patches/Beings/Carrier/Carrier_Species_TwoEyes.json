@@ -1,0 +1,20 @@
+{
+    "target" : "Config/Species/Types/Carrier.json",
+    "operations" : [
+        {
+            "op" : "remove",
+            "path" : "/BodyPartSlotTypes/-",
+            "value" : "Eye"
+        },
+        {
+            "op" : "add",
+            "path" : "/BodyPartSlotTypes/-",
+            "value" : "Eye_L"
+        },
+        {
+            "op" : "add",
+            "path" : "/BodyPartSlotTypes/-",
+            "value" : "Eye_R"
+        }
+    ]
+}

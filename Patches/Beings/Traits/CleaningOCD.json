@@ -1,0 +1,10 @@
+{
+    "target" : "Config/Traits/Defs/CleaningOCD.json",
+    "operations" : [
+        {
+            "op" : "replace",
+            "path" : "/AdjustsSkills[JobId=Cleaning]/Adjustment",
+            "value" : 5
+        }
+    ]
+}

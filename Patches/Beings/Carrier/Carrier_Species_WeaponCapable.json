@@ -1,0 +1,10 @@
+{
+    "target" : "Config/Species/Types/Carrier.json",
+    "operations" : [
+        {
+            "op" : "add",
+            "path" : "/InventorySlotTypes",
+            "value" : [ "Weapon" ]
+        }
+    ]
+}

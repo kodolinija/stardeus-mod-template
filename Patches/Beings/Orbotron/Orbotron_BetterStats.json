@@ -1,0 +1,20 @@
+{
+    "target" : "Config/Body/Parts/Body/BodyOrbotron.json",
+    "operations" : [
+        {
+            "op" : "replace",
+            "path" : "/ResistanceBase",
+            "value" : 100
+        },
+        {
+            "op" : "replace",
+            "path" : "/AddsAttackMethods[Component=BodySlam]/Properties[Key=DPS]/Float",
+            "value" : 8.0
+        },
+        {
+            "op" : "replace",
+            "path" : "/ProvidesStats[Component=ArmorEnergy]/Properties[Key=Amount]/Float",
+            "value" : 20.0
+        }
+    ]
+}

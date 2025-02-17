@@ -1,0 +1,11 @@
+{
+    // this change would affect all reactors, because they all derive from MatterReactorMini,
+    // but it will not, because other reactors redefine WithFuse with different parameters
+    "target" : "Definitions/Objects/Devices/MatterReactorMini.json",
+    "operations" : [
+        {
+            "op" : "remove",
+            "path" : "/Components[Component=WithFuse]"
+        }
+    ]
+}

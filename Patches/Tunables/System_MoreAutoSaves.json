@@ -1,0 +1,15 @@
+{
+    "target" : "Config/Tunable/System.json",
+    "operations" : [
+        {
+            "op" : "replace",
+            "path" : "/Ints[Key=AutoSaveCount]/Int",
+            "value" : 5
+        },
+        {
+            "op" : "replace",
+            "path" : "/Ints[Key=AutoSaveMaxWaitSecondsForIdle]/Int",
+            "value" : 30
+        }
+    ]
+}

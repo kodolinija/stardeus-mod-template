@@ -1,0 +1,10 @@
+{
+    "target" : "Config/Species/Jobs/Carrier.json",
+    "operations" : [
+        {
+            "op" : "add",
+            "path" : "/StartingJobs/-",
+            "value" : { "Job" : "Shooting" }
+        }
+    ]
+}

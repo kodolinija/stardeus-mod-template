@@ -1,0 +1,19 @@
+{
+    "target" : "Config/Body/Configurations/Carrier_Default.json",
+    "operations" : [
+        {
+            "op" : "remove",
+            "path" : "/Parts[Slot=Eye]"
+        },
+        {
+            "op" : "add",
+            "path" : "/Parts/-",
+            "value" : { "Slot" : "Eye_L", "Part" : "Eye/MiniOptics" }
+        },
+        {
+            "op" : "add",
+            "path" : "/Parts/-",
+            "value" : { "Slot" : "Eye_R", "Part" : "Eye/MiniOptics" }
+        }
+    ]
+}
