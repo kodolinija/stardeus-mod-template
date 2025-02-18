@@ -1,6 +1,7 @@
 {
     "Id" : "Template",
-    // Change this to true in order to share your mod on Steam Workshop
+    // Change this to true in order to share your mod on Steam Workshop.
+    // Also delete the SteamWorkshopItemId file that came with the example mod!
     "SteamWorkshop" : false,
     // Please create your own ModCover.jpg as well
     "Name" : "Stardeus Mod Template",

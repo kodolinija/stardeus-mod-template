@@ -12,4 +12,4 @@ and their formatting.
 If you are creating a new mod that introduces texts in UI or elsewhere, you must add newly created keys to your mod's Translation folder's English.csv.
 
 If a translation doesn't appear, you have likely forgotten the trailing comma (if comment is blank). CSV format is:
-`key,translation,comment`
+`key,translation,version,comment`
