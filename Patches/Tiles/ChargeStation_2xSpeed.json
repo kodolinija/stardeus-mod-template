@@ -1,0 +1,10 @@
+{
+    "target" : "Definitions/Objects/Devices/ChargeStation.json",
+    "operations" : [
+        {
+            "op" : "replace",
+            "path" : "/Components[Component=ChargeStation]/Properties[Key=ChargePerHour]/Float",
+            "value" : 50.0
+        }
+    ]
+}
