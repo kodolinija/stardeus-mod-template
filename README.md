@@ -9,6 +9,11 @@ See subfolders for more readme files on how to create Artwork, and Definitions.
 
 Best place to ask questions about modding Stardeus is on [Stardeus Discord](https://discord.com/invite/89amEwP), #stardeus-modding channel.
 
+## Empty Mod
+
+If you want to create a simple mod, this empty mod project may be a better starting point:
+https://github.com/kodolinija/stardeus-mod-empty
+
 ## GitHub Repository
 
 IMPORTANT! If you downloaded this mod from [Stardeus Steam Workshop](https://steamcommunity.com/app/1380910/workshop/),
