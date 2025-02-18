@@ -7,6 +7,8 @@
     "Name" : "Stardeus Mod Template",
     "Description" : "Example Stardeus mod template with VS Code. Contains official examples of how to mod certain aspects of the game. See more details at the GitHub repo: https://github.com/kodolinija/stardeus-mod-template",
     "ModVersion" : "1.1.0",
-    "GameVersion" : "0.12.7",
-    "Dependencies" : [ "Core" ]
+    "GameVersion" : "0.12.7"
+    // Uncomment if your mod depends on other mods.
+    // "Core" does not need to be defined as a dependency.
+    // "Dependencies" : [ "ModA", "ModB" ]
 }
