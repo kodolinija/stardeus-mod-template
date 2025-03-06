@@ -30,10 +30,9 @@ def ensure_collection(path):
 
 
 def output_path(path):
-    blender_dir = os.path.dirname(bpy.data.filepath)
-    artwork_dir = os.path.dirname(blender_dir)
-    stardeus_dir = os.path.dirname(artwork_dir)
-    graphics_dir = os.path.join(stardeus_dir, "Graphics/")
+    artwork_dir = os.path.dirname(bpy.data.filepath) # ./ModName/Artwork/ because blend file is located in Artwork by default
+    mod_dir = os.path.dirname(artwork_dir) # ./ModName/
+    graphics_dir = os.path.join(mod_dir, "Graphics/") # ./ModName/Graphics/
     if path.endswith("_"):
         path = path[:-1]
     return os.path.join(graphics_dir, path.replace('.', '/'))
