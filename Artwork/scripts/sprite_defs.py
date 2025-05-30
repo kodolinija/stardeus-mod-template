@@ -66,8 +66,9 @@ def add_clothing(sprites, species, name):
 
 
 SPRITES = {
+    "ModTest": Sprite("Objects/Devices/ModTest", 2, 3),
+
     # Devices
-    "Assembler": Sprite("Objects/Devices/Assembler", 2, 2, 1, 3),
     "AutoDoc": Sprite("Objects/Devices/AutoDoc", 2, 2, 1, 3),
     "AutoKitchen": Sprite("Objects/Devices/AutoKitchen", 2, 2, 1, 3),
     "AutoPainter": Sprite("Objects/Devices/AutoPainter", 2, 3),
