@@ -19,7 +19,8 @@ will most likely make things look not coherent with the rest of game art!
    Here 2, 2 is 2x2 tiles when object is facing down and up, and 1, 3 is 1x3
    tiles when object is facing left and right. Note that in game pump is 1x2 tiles,
    but it has "height", meaning 1x2 is base size, but actual sprite height is +1.
-2. Open StardeusMod.blend with blender 3.6 or newer. Then create a collection
+2. Open StardeusMod.blend with [Blender 3.6 LTS](https://www.blender.org/download/releases/3-6/).
+   Then create a collection
    using exactly same hierarchy and name (`Objects > Devices > ModTest`). You
    will have to put your model in this collection. But before your do anything
    else, move to step 3 now.
