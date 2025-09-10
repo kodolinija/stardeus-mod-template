@@ -28,7 +28,6 @@ https://www.youtube.com/playlist?list=PLvm1mLYInibc8n0Q5_caRql5nEUiBwvTC
 
 Subscribe to https://www.youtube.com/@KodoLinija and use the bell icon to get notified about new videos.
 
-
 ## How to compile a mod DLL with your code
 
 If you're on Linux, please refer to [Linux Build Instruction instead.](Linux.md)
@@ -46,6 +45,12 @@ If you're on Linux, please refer to [Linux Build Instruction instead.](Linux.md)
 
 You may need to examine what's in .vscode directory and modify / create new
 scripts there accordingly to what would work on your OS.
+
+## Mod Development Tips
+
+1. You can reduce the initial boot time by disabling texture compression. Run Stardeus.exe with `--uncompressed-textures` argument.
+2. You can skip the main menu and load directly into a specific save file. Run Stardeus.exe with `--load-save "Save Dir/Game Name"` argument.
+
 
 ## How to upload your mod to Steam Workshop
 
