@@ -14,6 +14,11 @@ Best place to ask questions about modding Stardeus is on [Stardeus Discord](http
 If you want to create a simple mod, this empty mod project may be a better starting point:
 https://github.com/kodolinija/stardeus-mod-empty
 
+## More Mod Examples
+
+You can find various mod examples in Kodo Linija GitHub org using this search:
+[https://github.com/kodolinija?q=mod&type=all](https://github.com/kodolinija?q=mod)
+
 ## GitHub Repository
 
 IMPORTANT! If you downloaded this mod from [Stardeus Steam Workshop](https://steamcommunity.com/app/1380910/workshop/),
