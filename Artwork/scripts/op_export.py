@@ -1,3 +1,4 @@
+# This is compatible with Blender 4.5 LTS
 import bpy
 from sprite_defs import *
 from mathutils import Vector
@@ -69,6 +70,28 @@ class StardeusExportActiveOperator(bpy.types.Operator):
 
         return {'FINISHED'}
 
+class StardeusExportHeadForwardOperator(bpy.types.Operator):
+    bl_idname = "object.stardeusexportheadforward"
+    bl_label = "Export Head Forward"
+    bl_description = "Exports active collection as head or hair in forward direction"
+
+    def execute(self, context):
+        bpy.ops.wm.save_mainfile()
+        exit_edit_mode()
+        col_name = bpy.context.view_layer.active_layer_collection.name
+        is_horizontal = col_name.endswith("_H")
+        if col_name in SPRITES:
+            col = SPRITES[col_name]
+            activate_model(self, col)
+            if is_horizontal:
+                export_model_head_horizontal_fw(self, col)
+            else:
+                export_model_head_fw(self, col)
+        else:
+            self.report({'ERROR'}, "Not found in SPRITES: " + col_name)
+
+        return {'FINISHED'}
+
 class StardeusActivateActiveOperator(bpy.types.Operator):
     bl_idname = "object.stardeusactivateactive"
     bl_label = "Activate Active"
@@ -92,6 +115,7 @@ class StardeusExportSelectedOperator(bpy.types.Operator):
     selection: bpy.props.StringProperty()
 
     def execute(self, context):
+        bpy.ops.wm.save_mainfile()
         exit_edit_mode()
         col = SPRITES[self.selection]
         activate_model(self, col)
@@ -136,12 +160,16 @@ def activate_model(operator, sprite, select_contents=True):
     enable_in_outliner(names, vl.layer_collection.children)
 
     # Toggle the right collections for rendering
+
     for col in bpy.data.collections:
         if select_contents:
             sel_children = col.name == final_name and sprite.subset == []
         else:
             sel_children = False
         toggle_collection(col, col.name in names, sel_children)
+        if col.name == final_name and sprite.activate_filter is not None:
+            select_filter(col, sprite.activate_filter)
+
 
     activate_camera(sprite, 'd')
 
@@ -170,6 +198,50 @@ def activate_camera(sprite, direction):
 
     scene.camera = cam_obj
 
+def export_model_head_fw(operator, sprite):
+    scene = bpy.context.scene
+    path = output_path(sprite.output)
+    scene.cursor.location = Vector((0.0, 0.0, 0.2))
+    scene.cursor.rotation_euler = Vector((0.0, 0.0, 0.0))
+    scene.tool_settings.transform_pivot_point = "CURSOR"
+    bpy.context.scene.transform_orientation_slots[0].type = 'GLOBAL'
+
+    # Down
+    rotate_selected(-20, axis='X', constraint=(True, False, False))
+    activate_camera(sprite, 'd')
+    render_scene(operator, path + "_D.png", sprite)
+    rotate_selected(20, axis='X', constraint=(True, False, False))
+
+    scene.cursor.location = Vector((0.0, 0.0, 0.0))
+
+def export_model_head_horizontal_fw(operator, sprite):
+    scene = bpy.context.scene
+    path = output_path(sprite.output)
+    scene.cursor.location = Vector((0.0, 0.0, 0.0))
+    scene.cursor.rotation_euler = Vector((0.0, 0.0, 0.0))
+    scene.tool_settings.transform_pivot_point = "CURSOR"
+    bpy.context.scene.transform_orientation_slots[0].type = 'GLOBAL'
+
+    # Left
+    activate_camera(sprite, 'l')
+    rotate_selected(-90)
+    # Turn head towards camera
+    rotate_selected(30, axis='X', constraint=(True, False, False))
+    render_scene(operator, path + "_L.png", sprite)
+    # Unrotate
+    rotate_selected(-30, axis='X', constraint=(True, False, False))
+    rotate_selected(90)
+
+    # Right
+    activate_camera(sprite, 'l')
+    rotate_selected(90)
+    # Turn head towards camera
+    rotate_selected(30, axis='X', constraint=(True, False, False))
+    render_scene(operator, path + "_R.png", sprite)
+    # Unrotate
+    rotate_selected(-30, axis='X', constraint=(True, False, False))
+    rotate_selected(-90)
+
 
 def export_model(operator, sprite):
     # Handle subsets
@@ -179,7 +251,8 @@ def export_model(operator, sprite):
             sprite_copy = copy.deepcopy(sprite)
             sprite_copy.subset = []
             sprite_copy.path = f'{sprite.path}/{root_name}{sub}'
-            print("Will export subsprite: " + sprite_copy.path)
+            sprite_copy.output = f'{sprite.output}/{root_name}{sub}'
+            print("Will export subsprite: " + sprite_copy.output)
             activate_model(operator, sprite_copy)
             export_model(operator, sprite_copy)
         return
@@ -188,38 +261,75 @@ def export_model(operator, sprite):
     path = output_path(sprite.output)
 
     if not sprite.is_rotatable:
-        render_scene(operator, path + ".png")
+        render_scene(operator, path + ".png", sprite)
         return
 
     scene.cursor.location = Vector((0.0, 0.0, 0.0))
     scene.cursor.rotation_euler = Vector((0.0, 0.0, 0.0))
 
     prev_pivot = scene.tool_settings.transform_pivot_point
+    prev_ori = bpy.context.scene.transform_orientation_slots[0].type
     scene.tool_settings.transform_pivot_point = "CURSOR"
+    bpy.context.scene.transform_orientation_slots[0].type = 'GLOBAL'
 
-    # Down
-    if 'D' not in sprite.skip_rotations:
+    skip_rots = list(sprite.skip_rotations)
+
+    # Export special head rotations first
+    if sprite.is_head:
+        if path.endswith("_H"):
+            skip_rots.append('L')
+            skip_rots.append('R')
+        else:
+            skip_rots.append('D')
+
+    report(operator, "Skip rots: " + str(skip_rots))
+
+    if sprite.num_rotations == 0:
+        # Down
+        if 'D' not in skip_rots:
+            activate_camera(sprite, 'd')
+            render_scene(operator, path + "_D.png", sprite)
+        rotate_selected(-90)
+        if 'L' not in skip_rots:
+            activate_camera(sprite, 'l')
+            render_scene(operator, path + "_L.png", sprite)
+        rotate_selected(-90)
+        if 'U' not in skip_rots:
+            activate_camera(sprite, 'u')
+            render_scene(operator, path + "_U.png", sprite)
+        rotate_selected(-90)
+        if 'R' not in skip_rots:
+            activate_camera(sprite, 'r')
+            render_scene(operator, path + "_R.png", sprite)
+
+        # Rotate back
+        rotate_selected(270)
+    else:
+        # Turret / anim mode
+        deg = (360 / sprite.num_rotations)
         activate_camera(sprite, 'd')
-        render_scene(operator, path + "_D.png")
-    rotate_selected(-90)
-    if 'L' not in sprite.skip_rotations:
-        activate_camera(sprite, 'l')
-        render_scene(operator, path + "_L.png")
-    rotate_selected(-90)
-    if 'U' not in sprite.skip_rotations:
-        activate_camera(sprite, 'u')
-        render_scene(operator, path + "_U.png")
-    rotate_selected(-90)
-    if 'R' not in sprite.skip_rotations:
-        activate_camera(sprite, 'r')
-        render_scene(operator, path + "_R.png")
-    # Rotate back
-    rotate_selected(270)
+        for i in range(sprite.num_rotations):
+            if sprite.stop_at_rotation == 0 or sprite.stop_at_rotation > i:
+                render_scene(operator, path + "_R" + str(i) + ".png", sprite)
+            rotate_selected(-deg)
+        # Rotate back
+        rotate_selected(360)
+
+
+    # Export special head rotations
+    if sprite.is_head:
+        if path.endswith("_H"):
+            report(operator, "Exporting special horizontal head rotations for " + sprite.path)
+            export_model_head_horizontal_fw(operator, sprite)
+        else:
+            report(operator, "Exporting special head rotation for " + sprite.path)
+            export_model_head_fw(operator, sprite)
 
     activate_camera(sprite, 'd')
     report(operator, "Done rendering " + path)
 
     scene.tool_settings.transform_pivot_point = prev_pivot
+    bpy.context.scene.transform_orientation_slots[0].type = prev_ori
 
 def get_override(area_type, region_type):
     for area in bpy.context.screen.areas:
@@ -235,17 +345,53 @@ def get_override(area_type, region_type):
 
 def rotate_selected(deg, axis='Z', constraint=(False, False, True)):
     rads = radians(deg)
-    override = get_override("VIEW_3D", "WINDOW")
-    bpy.ops.transform.rotate(override, value=rads, orient_axis=axis, orient_type='GLOBAL',
-        orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
-        orient_matrix_type='GLOBAL',
-        constraint_axis=constraint,
-        mirror=True)
+    # Blender 4.0+ uses context.temp_override instead of passing override as first argument
+    for area in bpy.context.screen.areas:
+        if area.type == 'VIEW_3D':
+            for region in area.regions:
+                if region.type == 'WINDOW':
+                    with bpy.context.temp_override(area=area, region=region):
+                        bpy.ops.transform.rotate(value=rads, orient_axis=axis, orient_type='GLOBAL',
+                            orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+                            orient_matrix_type='GLOBAL',
+                            constraint_axis=constraint,
+                            mirror=True)
+                    # Force depsgraph update so rotation is applied before rendering
+                    bpy.context.view_layer.update()
+                    return
+    raise RuntimeError("Wasn't able to find VIEW_3D area with WINDOW region")
 
-def render_scene(operator, path):
+def render_scene(operator, path, sprite):
     report(operator, "Rendering: " + path)
     bpy.context.scene.render.filepath = path
-    bpy.ops.render.render(write_still=True)
+
+    if sprite.anim_frames > 0:
+        # anim_speed_pct works like the old frame_map_new: higher percentage = slower animation = more frames
+        # 100% = normal speed (anim_frames frames), 200% = half speed (double the frames), 50% = double speed (half the frames)
+        original_frame_start = bpy.context.scene.frame_start
+        original_frame_end = bpy.context.scene.frame_end
+
+        # Calculate total output frames: higher percentage = more frames
+        num_output_frames = int(sprite.anim_frames * (sprite.anim_speed_pct / 100.0))
+        bpy.context.scene.frame_start = 0
+        bpy.context.scene.frame_end = sprite.anim_frames - 1
+
+        # Render each output frame, sampling from the source animation
+        for output_frame in range(0, num_output_frames):
+            # Map output frame to source frame (slower playback = lower source frame number)
+            source_frame = int(output_frame / (sprite.anim_speed_pct / 100.0))
+            bpy.context.scene.frame_set(source_frame)
+            if path.endswith(".png"):
+                path = path[:-4]
+            frame_path = f"{path}_F{output_frame}.png"
+            bpy.context.scene.render.filepath = frame_path
+            bpy.ops.render.render(write_still=True)
+
+        # Restore original frame settings
+        bpy.context.scene.frame_start = original_frame_start
+        bpy.context.scene.frame_end = original_frame_end
+    else:
+        bpy.ops.render.render(write_still=True)
 
 def report(operator, what):
     operator.report({'INFO'}, what)
@@ -269,5 +415,11 @@ def toggle_collection(col, on, sel_children):
         return
     for obj in col.all_objects:
         if not obj.hide_viewport:
-
             obj.select_set(True)
+
+def select_filter(col, filter):
+    for obj in col.all_objects:
+        if obj.name.startswith(filter):
+            obj.select_set(True)
+        else:
+            obj.select_set(False)

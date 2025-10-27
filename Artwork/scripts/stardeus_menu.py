@@ -13,9 +13,9 @@ import op_export
 import sprite_defs
 
 # this next part forces a reload in case you edit the source after you first start the blender session
-import imp
-imp.reload(op_export)
-imp.reload(sprite_defs)
+import importlib
+importlib.reload(op_export)
+importlib.reload(sprite_defs)
 
 # this is optional and allows you to call the functions without specifying the package name
 from op_export import *
@@ -29,10 +29,10 @@ class StardeusMenu(bpy.types.Menu):
         active_col_name = bpy.context.view_layer.active_layer_collection.name
         layout.operator(StardeusReloadScripts.bl_idname)
         layout.separator()
-        layout.operator(StardeusActivateActiveOperator.bl_idname, text=f"Activate {active_col_name}")
+        layout.operator(StardeusActivateActiveOperator.bl_idname, text=f"ActAct: {active_col_name}")
         layout.menu(StardeusActivateSubmenu.bl_idname)
         layout.separator()
-        layout.operator(StardeusExportActiveOperator.bl_idname, text=f"Export {active_col_name}")
+        layout.operator(StardeusExportActiveOperator.bl_idname, text=f"ExpAct: {active_col_name}")
         layout.menu(StardeusRenderSubmenu.bl_idname)
         layout.separator()
         layout.operator(StardeusExportAllOperator.bl_idname)
@@ -77,7 +77,6 @@ def reload_scripts():
     load_script(scr)
     print("loading script again")
 
-
 def load_script(filename):
     filepath = os.path.join(os.path.dirname(bpy.data.filepath), filename)
     global_namespace = {"__file__": filepath, "__name__": "__main__"}
@@ -106,6 +105,7 @@ def register():
     bpy.utils.register_class(StardeusRenderSubmenu)
     bpy.utils.register_class(StardeusActivateSubmenu)
     bpy.utils.register_class(StardeusMenu)
+
     bpy.types.TOPBAR_MT_render.append(draw_item)
     bpy.types.OUTLINER_MT_collection.append(draw_item)
 
