@@ -12,6 +12,9 @@ will most likely make things look not coherent with the rest of game art!
 
 # Artwork Workflow
 
+0. Go to blender's Edit > Preferences > Keymap and set Spacebar Action to "Search".
+   If you don't want to, then use F3 or whatever opens search in your blender when
+   the steps below ask to use space to open search.
 1. Add a new sprite definition to `Scripts/sprite_defs.py`. Easiest way is to just
    copy an existing definition from a sprite that is of the same size and properties
    that you want to create, and just change it's name. For example:
