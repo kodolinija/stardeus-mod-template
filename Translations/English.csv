@@ -1,7 +1,10 @@
 Key,Translation,Version,Comment (context for translators)
-example.mod.submenu.title,Example Submenu Title,,
 objects.devices.modtest,Mod Test,,
 objects.devices.modtest.desc,Description about Mod Test device,,
 example.translation.key,Example translation key,,
 example.key.test1,Test 1,,
-item.text,{0} => {1},,explain what {0} and {1} will be replaced with here
+example.tab.name,Example,,Entity panel tab name for the example device
+example.tab.energy_cost,Energy Cost,,
+example.tab.demo_flag,Demo Flag,,
+example.tab.demo_flag.on,On,,
+example.tab.demo_flag.off,Off,,

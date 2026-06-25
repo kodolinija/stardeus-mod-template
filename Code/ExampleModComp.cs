@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using Game.Constants;
 using Game.Data;
 using Game.Utils;
 using Game.CodeGen;
-using UnityEngine;
 using Game.Systems.AI;
 using KL.Utils;
 
@@ -12,29 +10,35 @@ namespace Game.Components {
     /// WARNING Don't forget to replace BaseComponent<ExampleComp>
     /// with correct component class name
     /// </summary>
-    public sealed class ExampleModComp : BaseComponent<ExampleModComp>, IUIDataProvider,
-            IUIContextMenuProvider, IAIGoalProvider, IUIMultiSelectable, IUISubmenuProvider {
+    public sealed class ExampleModComp : BaseComponent<ExampleModComp>, IAIGoalProvider {
 
         /// <summary>
         /// Add the following with correct class name to register
         /// the component at runtime when mod loads:
         /// AddComponentPrototype(new ExampleModComp());
+        /// Mod DLLs are loaded before any [SelfInit] stage runs, so plain
+        /// [SelfInit] (default stage CoreDefs) works here exactly like it
+        /// does for core components (e.g. LightSourceComp, WithFuseComp) --
         /// </summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.
-            SubsystemRegistration)]
+        [SelfInit]
         private static void Register() {
             AddComponentPrototype(new ExampleModComp());
         }
 
         private int energyCost;
+        // Exposed for ExampleTab.cs, which displays this in the entity panel.
+        public int EnergyCost => energyCost;
+
+        // A small piece of mutable, saved state, just so ExampleTab.cs has
+        // something to read AND write (and demonstrate ReloadTab()).
+        private bool demoFlag;
+        public bool DemoFlag {
+            get => demoFlag;
+            set => demoFlag = value;
+        }
+
         // If you want this to be an electric device
         private ElectricNodeComp elNode;
-        private UDB dataBlock;
-        public string CommonActionId => "See other common actions";
-        public bool IsReachableForCommonAction => true;
-        public bool HasSubmenuNow => true;
-        public string SubmenuTitle => "submenu.title".T();
-
 
         protected override void OnConfig() {
             energyCost = Config.GetInt(PropertyIdH.EnergyCost);
@@ -43,10 +47,12 @@ namespace Game.Components {
         public override void OnSave() {
             var data = GetOrCreateData();
             data.SetInt("EnergyCost", energyCost);
+            data.SetBool("DemoFlag", demoFlag);
         }
 
         protected override void OnLoad(ComponentData data) {
             energyCost = data.GetInt("EnergyCost", 0);
+            demoFlag = data.GetBool("DemoFlag", false);
         }
 
         public override void OnReady(bool wasLoaded) {
@@ -105,39 +111,10 @@ namespace Game.Components {
             // for this device if such goal exists.
         }
 
-        public UDB GetUIBlock() {
-            // If it's not an energy enabled device, remove the isReachable check
-            if (!Tile.IsConstructed || !Tile.ENode.IsReachable) {
-                return null;
-            }
-            dataBlock ??= UDB.Create(this, UDBT.IText, IconId.CQuestion,
-                "some.title".T()).WithGroupId(UDBGH.Management);
-            UpdateUIBlock(false);
-            return dataBlock;
-        }
-
-        private void UpdateUIBlock(bool wasUpdated) {
-            if (wasUpdated && dataBlock?.IsShowing != true) { return; }
-            // TODO implement
-
-            dataBlock.UpdateTitle("some.title".T());
-        }
-
-        public void GetUIDetails(List<UDB> res) {
-            res.Add(UDB.Create(this,
-                    UDBT.DText,
-                    IconId.CMissing,
-                    "item.name".T())
-                        // In translations item.text = "Foo bar {0} {1}"
-                        // would output "Foo bar 1 2"
-                        .WithText("item.text".T(1, 2)));
-        }
-
-        public void ContextActions(List<UDB> res) {
-            // You can add different items in the context menu, the
-            // following will show info panel details submenu as the context menu
-            GetUIDetails(res);
-        }
+        // Entity-panel UI for this component lives in ExampleTab.cs (see
+        // Assets/Scripts/Game/Systems/UIUX/Handlers/EntityTabs/ in the main project
+        // for the BaseEntityTab API this mod targets). The old IUIDataProvider /
+        // IUISubmenuProvider / IUIContextMenuProvider / UDB system has been removed.
 
         public override string ToString() {
             return $" * Example [EnergyCost: {energyCost}. Entity: {entity}]";

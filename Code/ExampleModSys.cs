@@ -1,23 +1,21 @@
-using System.Collections.Generic;
-using ExampleMod.UI;
 using Game.Components;
-using Game.Constants;
 using Game.Data;
-using Game.UI;
 using Game.Systems;
-using KL.Utils;
-using UnityEngine;
 using Game.Utils;
+using KL.Utils;
 
 namespace ExampleMod.Systems {
-    public sealed class ExampleModSys : GameSystem, IOverlayProvider, ISaveable {
+    public sealed class ExampleModSys : GameSystem, ISaveable {
         // The convention is that all systems end with Sys, and SysId is equal to the class name
         public const string SysId = "ExampleModSys";
         public override string Id => SysId;
         // If your system can work in sandbox too, set this to false
         public override bool SkipInSandbox => true;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        // Mod DLLs are loaded before any [SelfInit] stage runs, so plain [SelfInit]
+        // (default stage CoreDefs) works here exactly like it does for core systems
+        // (e.g. LightSys.Register()) -- see Docs/Architecture/SelfInit.md.
+        [SelfInit]
         private static void Register() {
             GameSystems.Register(SysId, () => new ExampleModSys());
         }
@@ -26,47 +24,21 @@ namespace ExampleMod.Systems {
         // old saves, you have to set the MinRequiredVersion
         //public override string MinRequiredVersion => "0.6.89";
 
-        // By returning something in the Overlays list, your system can add
-        // buttons in the top right section of the game UI.
-        // Those buttons will toggle the overlays.
-        // Almost always there will be just one OverlayInfo in the list,
-        // The only exceptions right now are:
-        // - EquilibriumSys (Oxygen, Heat, Airtightness and Insulation)
-        // - HiveMindSys (Beings, Tasks)
-        public List<OverlayInfo> Overlays => overlays;
-        private readonly List<OverlayInfo> overlays = new();
-
-        private ExampleOverlayUI ui;
-        // Public so that the UI can use it
+        // Public so that the UI can use it. See ExampleTab.cs for the entity-panel
+        // UI that exposes mod state; this system has no overlay/center-panel UI of
+        // its own (the old UDB-based overlay example was removed -- if you need a
+        // system-level overlay button, implement IOverlayProvider; see
+        // Assets/Scripts/Game/Systems/Light/LightSys.cs in the main project for a
+        // current, minimal example).
         public int SomeVariable;
 
         protected override void OnInitialize() {
-            overlays.Clear();
-            overlays.Add(overlayInfo);
-            ui = new ExampleOverlayUI(this);
-
             S.Sig.AfterLoadState.AddListener(OnLoadSave);
             S.Sig.AreasInitialized.AddListener(OnAreasInit);
-            S.Sig.ToggleOverlay.AddListener(OnToggleOverlay);
-        }
-
-        // You will have to create Graphics/Icons/White/ExampleModIcon.png
-        private readonly OverlayInfo overlayInfo = new OverlayInfo(
-            OverlayType.Controls, SysId, "Icons/White/ExampleModIcon");
-
-        private void OnToggleOverlay(OverlayInfo info, bool on) {
-            D.Err("Toggling overlay: {0} -> {1}", info.Id, on);
-            if (!on || info.Id != SysId) {
-                ui.HideUI();
-            } else {
-                ui.ShowUI();
-            }
         }
 
         private void OnLoadSave(GameState state) {
             state.Clock.OnTick.AddListener(OnTick);
-            UIPopupWidget.Spawn(IconId.CWarning, "warning".T(),
-                "Note for mod developer. ExampleModSys should be removed from your mod.<br>A new overlay button was added to the <b>bottom right</b> of the screen.");
         }
 
         // If your system depends on AreasSys, for example, you may want to

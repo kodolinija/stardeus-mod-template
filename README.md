@@ -46,7 +46,8 @@ If you're on Linux, please refer to [Linux Build Instruction instead.](Linux.md)
 7. Move the folder to the `Mods` directory near your `Saves`. You can open the folder from Stardeus itself, through `Main Menu > Mods > About Mods > Open User Mods Directory`.
 8. Open the folder with `Visual Studio Code`.
 9. Press `F5` to compile the DLL file and run Stardeus.
-10. Once Stardeus starts, you should see your mod listed and enabled in `Main Menu > Mods`.
+10. Once Stardeus starts, you should see your mod listed in `Main Menu > Mods`.
+11. You will have to enable the mod, since all newly loaded mods are disabled by default.
 
 You may need to examine what's in .vscode directory and modify / create new
 scripts there accordingly to what would work on your OS.

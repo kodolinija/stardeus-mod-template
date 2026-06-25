@@ -1,12 +1,32 @@
 # Stardeus Modding Concepts
 
-Most of Stardeus components are self-registering using Unity's `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`. This means you won't need hacks like Harmony for things like creating new components, systems, AI actions, etc. There may be some limitations to what can be achieved through code, but you can always visit Stardeus Discord's #stardeus-modding channel and get some help. It is likely that what you need can be exposed easily.
+Most of Stardeus components are self-registering using the game's own `[SelfInit]` attribute (see `Game.Utils.SelfInitAttribute`). Mod DLLs are loaded before any `[SelfInit]` stage runs, so it works the same way inside a mod as it does in the core game — this template uses it throughout. Unity's `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]` is also a valid, simpler entry point if you don't need stage/order control. Either way, you won't need hacks like Harmony for things like creating new components, systems, AI actions, etc. There may be some limitations to what can be achieved through code, but you can always visit Stardeus Discord's #stardeus-modding channel and get some help. It is likely that what you need can be exposed easily.
 
 We are using strings instead of enums in most situations where enum would be a reasonable choice, because strings give more flexibility to create new types of parameters that could be hard to introduce as a new enum value, especially if multiple mods would want to touch the same enum.
 
 Best way to figure how to create the code is to decompile Stardeus DLL files and analyze them. There are some free decompilers available: JetBrains DotPeek, dnSpy.
 
 Note that everything that uses `RuntimeInitializeOnLoadMethod` will be `sealed` to prevent attempts of extending classes with custom implementations. This is intended, inheritence is bad design in general, composition should be preferred. Also, `RuntimeInitializeOnLoadMethod` will not work with inheritence. Easiest way to modify some component is to create a new component that interacts with existing component. For example, see `Bullet` and `EnergyBullet` - these are separate components and `EnergyBullet` extends the functionality of `Bullet`.
+
+## What's in this template
+
+- `ExampleModComp.cs` — a self-registering `BaseComponent`, attached to the `ModTest`
+  device (`Definitions/Objects/Devices/ModTest.json`). Shows config reading,
+  save/load, the electricity hookup, and AI goal callbacks.
+- `ExampleTab.cs` — the entity-panel UI for `ExampleModComp`, using the
+  `BaseEntityTab` + `UISpawn` widget system (the current UI system; the older
+  UDB/`IUIDataProvider` system has been removed from the game).
+- `ExampleModSys.cs` — a minimal self-registering `GameSystem` with save/load,
+  showing signal listeners and a tick handler. Has no UI of its own; see
+  `ExampleTab.cs` for the UI example.
+
+**Note:** mod DLLs are loaded before any `[SelfInit]` stage runs, so `[SelfInit]`
+works the same inside a mod as it does in the core game. `ExampleTab.cs` registers
+with plain `[SelfInit]`, exactly like the in-game `HeaterTab.cs` and the
+`ExampleModComp.cs`/`ExampleModSys.cs` registrations elsewhere in this mod. See
+`Docs/Architecture/SelfInit.md` (the "Mods" section) in the main project for the
+underlying mechanism and a couple of minor caveats (assembly-name blacklist,
+referencing the game's `Game.Utils` assembly).
 
 ## Debugging in Visual Studio with breakpoints
 
