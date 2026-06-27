@@ -33,6 +33,11 @@ https://www.youtube.com/playlist?list=PLvm1mLYInibc8n0Q5_caRql5nEUiBwvTC
 
 Subscribe to https://www.youtube.com/@KodoLinija and use the bell icon to get notified about new videos.
 
+## Prerequisites for compiling the C# DLL with VSCode
+
+1. Install latest dotnet SDK: https://dotnet.microsoft.com/en-us/download
+2. In VSCode, install the following extensions: .NET Install Tool, C#, C# DevKit, Unity (all by Microsoft)
+
 ## How to compile a mod DLL with your code
 
 If you're on Linux, please refer to [Linux Build Instruction instead.](Linux.md)
