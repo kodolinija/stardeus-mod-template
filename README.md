@@ -61,6 +61,7 @@ scripts there accordingly to what would work on your OS.
 
 1. You can reduce the initial boot time by disabling texture compression. Run Stardeus.exe with `--uncompressed-textures` argument.
 2. You can skip the main menu and load directly into a specific save file. Run Stardeus.exe with `--load-save "Save Dir/Game Name"` argument.
+3. You can quickly create an empty mod with just ModInfo.json using this console command: `mod create <ModId> <Mod Name>`
 
 
 ## How to upload your mod to Steam Workshop
